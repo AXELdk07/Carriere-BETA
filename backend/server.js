@@ -439,14 +439,18 @@ app.post('/api/room/score', async (req, res) => {
   }
 });
 
-// ✅ Démarrer le serveur
-app.listen(PORT, () => {
-  console.log('');
-  console.log('🚀 ===================================');
-  console.log('🔥 BACKEND SERVEUR LANCÉ !');
-  console.log(`📡 Port: http://localhost:${PORT}`);
-  console.log(`🍃 MongoDB: ${process.env.MONGODB_URI}`);
-  console.log('✅ Prêt à recevoir des requêtes !');
-  console.log('===================================');
-  console.log('');
-});
+module.exports = app;
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log('');
+    console.log('🚀 ===================================');
+    console.log('🔥 BACKEND SERVEUR LANCÉ !');
+    console.log(`🚀 Serveur Express sur le port ${PORT}`);
+    console.log(`📡 Port: http://localhost:${PORT}`);
+    console.log(`🍃 MongoDB: ${process.env.MONGODB_URI}`);
+    console.log('✅ Prêt à recevoir des requêtes !');
+    console.log('===================================');
+    console.log('');
+  });
+}
