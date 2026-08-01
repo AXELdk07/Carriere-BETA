@@ -1,0 +1,42 @@
+# Dépendances
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# Fichiers de configuration
+.env
+.env.local
+.env*.local
+*.tsbuildinfo
+drizzle.config.json
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+*.log
+
+# Fichiers temporaires
+*.tmp
+*.temp
+.cache/
+
+# Backend
+backend/node_modules/
+backend/.env
+
+# Scripts Python
+scripts/__pycache__/
+*.pyc
+*.pyo
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dev tools
+eslintcache
