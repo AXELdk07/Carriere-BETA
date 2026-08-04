@@ -890,6 +890,7 @@ function QuizScreen({
       if (isLastQuestion) {
         sessionStorage.removeItem("quizState");
         setAnswers(newAnswers);
+        // ✅ Soumettre le score automatiquement à la fin du quiz
         onComplete(newAnswers);
         return;
       }
@@ -1646,7 +1647,7 @@ function ResultsScreen({
   );
 }
 
-// ─────────────── MULTI RESULTS SCREEN ───────────────
+// ─────────────── MULTI RESULTS SCREEN (CORRIGÉ) ───────────────
 function MultiResultsScreen({
   answers,
   userName,
@@ -1672,12 +1673,10 @@ function MultiResultsScreen({
   ) => void;
   roomNotice?: string;
 }) {
-  const [checkedAnswers, setCheckedAnswers] = useState<boolean[]>(
-    answers.map((a) => a.isCorrect)
-  );
   const [myFinalScore, setMyFinalScore] = useState<number | null>(null);
   const [waitingForAll, setWaitingForAll] = useState(false);
   const [allDone, setAllDone] = useState(false);
+  const [roomStatus, setRoomStatus] = useState<"waiting" | "playing" | "reviewing" | "finished">("playing");
   const [participantResults, setParticipantResults] = useState<ParticipantResult[]>(
     participants.map((n) => ({
       name: n,
@@ -1687,6 +1686,9 @@ function MultiResultsScreen({
       done: false,
     }))
   );
+  const [participantAnswers, setParticipantAnswers] = useState<{ playerName: string; answers: string[] }[]>([]);
+  const [corrections, setCorrections] = useState<{ playerName: string; questionIndex: number; isCorrect: boolean }[]>([]);
+  const [allVerified, setAllVerified] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isReplaying, setIsReplaying] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState<
@@ -1703,15 +1705,144 @@ function MultiResultsScreen({
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hasSubmittedRef = useRef(false);
   const hasRedirectedRef = useRef(false);
-
   const isHost = userName === hostName;
+  const myTotal = answers.length;
 
+  // ✅ Calculer le score automatique
+  const calculatedScore = answers.filter(a => a.isCorrect).length;
+  const totalTime = answers.reduce((acc, a) => acc + a.timeSpent, 0);
+  const avgTime = answers.length > 0 ? totalTime / answers.length : null;
+
+  // ✅ Obtenir les noms des joueurs (participants)
+  const playerNames = participants;
+
+  // ✅ Fonction pour vérifier si une cellule est corrigée
+  const isCellCorrect = (playerName: string, questionIndex: number): boolean | null => {
+    const correction = corrections.find(
+      (c) => c.playerName === playerName && c.questionIndex === questionIndex
+    );
+    if (correction) return correction.isCorrect;
+    return null;
+  };
+
+  // ✅ Fonction pour obtenir le statut d'une cellule
+  const getCellStatus = (playerName: string, questionIndex: number): "correct" | "incorrect" | "neutral" => {
+    const result = isCellCorrect(playerName, questionIndex);
+    if (result === true) return "correct";
+    if (result === false) return "incorrect";
+    return "neutral";
+  };
+
+  // ✅ Fonction pour le HOST : clic sur une cellule
+  const handleCellClick = (playerName: string, questionIndex: number) => {
+    if (!isHost) return;
+    if (roomStatus !== "reviewing") return;
+
+    const currentStatus = getCellStatus(playerName, questionIndex);
+    let newIsCorrect: boolean | null = null;
+
+    if (currentStatus === "neutral") {
+      newIsCorrect = true;
+    } else if (currentStatus === "correct") {
+      newIsCorrect = false;
+    } else if (currentStatus === "incorrect") {
+      newIsCorrect = null;
+    }
+
+    let newCorrections = corrections.filter(
+      (c) => !(c.playerName === playerName && c.questionIndex === questionIndex)
+    );
+
+    if (newIsCorrect !== null) {
+      newCorrections.push({
+        playerName,
+        questionIndex,
+        isCorrect: newIsCorrect,
+      });
+    }
+
+    setCorrections(newCorrections);
+    saveCorrections(newCorrections);
+  };
+
+  // ✅ Sauvegarder les corrections sur le serveur
+  const saveCorrections = async (newCorrections: typeof corrections) => {
+    try {
+      const response = await fetch("/api/room/correct", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: roomCode,
+          hostName: userName,
+          corrections: newCorrections,
+        }),
+      });
+      if (!response.ok) {
+        console.error("Erreur sauvegarde corrections");
+      }
+    } catch (error) {
+      console.error("Erreur sauvegarde corrections:", error);
+    }
+  };
+
+  // ✅ Polling pour les mises à jour
   useEffect(() => {
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-  }, []);
+    const pollStatus = async () => {
+      try {
+        const res = await fetch(`/api/room/status?code=${roomCode}`);
+        const data = await res.json();
+        if (!res.ok) return;
 
+        setRoomStatus(data.status);
+        setParticipantResults(data.participants || []);
+        setParticipantAnswers(data.participantAnswers || []);
+        setCorrections(data.corrections || []);
+        setAllVerified(data.allVerified || false);
+
+        const allDone = data.participants?.every((p: ParticipantResult) => p.done === true) || false;
+        if (allDone && data.status === "reviewing") {
+          setAllDone(true);
+          setWaitingForAll(false);
+        }
+
+        if (data.status === "waiting" && !hasRedirectedRef.current) {
+          hasRedirectedRef.current = true;
+          onReplay(
+            data.quizPlayers ?? [],
+            data.code,
+            data.hostName,
+            data.participants?.map((p: ParticipantResult) => p.name) || [],
+            data.status
+          );
+          return;
+        }
+
+        if (data.status === "finished") {
+          setAllDone(true);
+          setWaitingForAll(false);
+          const finalScores = data.participants?.map((p: ParticipantResult) => ({
+            ...p,
+            score: p.score ?? 0,
+          })) || [];
+          setParticipantResults(finalScores);
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+
+    pollStatus();
+    pollRef.current = setInterval(pollStatus, 2000);
+
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    };
+  }, [roomCode, userName, onReplay]);
+
+  // ✅ Effet pour les confettis
   useEffect(() => {
     if (showConfetti) {
       const colors = ["#ffd700", "#44ff44", "#ff4444", "#4444ff", "#ff44ff", "#44ffff"];
@@ -1730,76 +1861,12 @@ function MultiResultsScreen({
     }
   }, [showConfetti]);
 
-  useEffect(() => {
-    const pollRoom = async () => {
-      try {
-        const res = await fetch(`/api/room/${roomCode}`);
-        const data = await res.json();
-        if (!res.ok) return;
-
-        const updated = data.participants ?? [];
-        setParticipantResults(updated);
-
-        if (data.status === "waiting" && !hasRedirectedRef.current) {
-          hasRedirectedRef.current = true;
-          onReplay(
-            data.quizPlayers ?? [],
-            data.code,
-            data.hostName,
-            updated.map((p: ParticipantResult) => p.name),
-            data.status
-          );
-          return;
-        }
-
-        const allParticipantsDone = updated.length > 0 && updated.every((p: ParticipantResult) => p.done === true);
-        
-        if (allParticipantsDone && !allDone) {
-          setAllDone(true);
-          setWaitingForAll(false);
-          
-          const sorted = [...updated].sort(
-            (a: ParticipantResult, b: ParticipantResult) =>
-              (b.score ?? -1) - (a.score ?? -1) ||
-              (a.avgTimePerQuestion ?? Number.POSITIVE_INFINITY) -
-                (b.avgTimePerQuestion ?? Number.POSITIVE_INFINITY)
-          );
-          
-          if (sorted.length > 0 && sorted[0]?.name === userName) {
-            setShowConfetti(true);
-          }
-        }
-      } catch {
-        /* ignore */
-      }
-    };
-
-    pollRoom();
-    pollRef.current = setInterval(pollRoom, 2000);
-
-    return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-        pollRef.current = null;
-      }
-    };
-  }, [roomCode, userName, allDone, onReplay]);
-
-  const toggleCheck = (index: number) => {
-    if (myFinalScore !== null) return;
-    const newChecked = [...checkedAnswers];
-    newChecked[index] = !newChecked[index];
-    setCheckedAnswers(newChecked);
-  };
-
+  // ✅ Confirmer le score (pour les joueurs non-HOST) - Déprécié car automatique
   const confirmScore = async () => {
     if (hasSubmittedRef.current) return;
     hasSubmittedRef.current = true;
 
-    const score = checkedAnswers.filter(Boolean).length;
-    
-    const totalTime = answers.reduce((acc, a) => acc + a.timeSpent, 0);
-    const avgTime = answers.length > 0 ? totalTime / answers.length : null;
+    const score = calculatedScore;
 
     setMyFinalScore(score);
 
@@ -1829,7 +1896,7 @@ function MultiResultsScreen({
           avgTimePerQuestion: avgTime,
         }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Erreur soumission score:", errorData);
@@ -1837,19 +1904,7 @@ function MultiResultsScreen({
           console.log("Score déjà soumis");
         }
       } else {
-        const data = await response.json();
-        console.log("Score soumis avec succès:", data);
-        
-        const res = await fetch(`/api/room/${roomCode}`);
-        const roomData = await res.json();
-        if (roomData.participants) {
-          setParticipantResults(roomData.participants);
-          const allDone = roomData.participants.every((p: ParticipantResult) => p.done);
-          if (allDone) {
-            setAllDone(true);
-            setWaitingForAll(false);
-          }
-        }
+        console.log("Score soumis avec succès");
       }
     } catch (err) {
       console.error("Erreur soumission score multi:", err);
@@ -1859,6 +1914,67 @@ function MultiResultsScreen({
     setWaitingForAll(true);
   };
 
+  // ✅ Confirmer les résultats (pour le HOST)
+  const confirmResults = async () => {
+    if (!isHost) return;
+    if (!allVerified) return;
+
+    try {
+      const finalScores = participantResults.map((p) => {
+        let score = 0;
+        for (let i = 0; i < answers.length; i++) {
+          const isCorrect = isCellCorrect(p.name, i);
+          if (isCorrect === true) score++;
+        }
+        return {
+          ...p,
+          score,
+          totalQuestions: answers.length,
+          done: true,
+        };
+      });
+
+      for (const p of finalScores) {
+        if (p.name !== userName) {
+          await fetch("/api/room/score", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              code: roomCode,
+              playerName: p.name,
+              score: p.score,
+              totalQuestions: answers.length,
+              avgTimePerQuestion: p.avgTimePerQuestion || 0,
+            }),
+          });
+        }
+      }
+
+      await fetch(`/api/room/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: roomCode,
+          status: "finished",
+        }),
+      });
+
+      setParticipantResults(finalScores as ParticipantResult[]);
+      setAllDone(true);
+      setWaitingForAll(false);
+
+      const sorted = [...finalScores].sort(
+        (a, b) => (b.score ?? 0) - (a.score ?? 0)
+      );
+      if (sorted.length > 0 && sorted[0]?.name === userName) {
+        setShowConfetti(true);
+      }
+    } catch (error) {
+      console.error("Erreur confirmation résultats:", error);
+    }
+  };
+
+  // ✅ Replay
   const handleReplay = async () => {
     if (isReplaying) return;
     setIsReplaying(true);
@@ -1866,11 +1982,10 @@ function MultiResultsScreen({
       const res = await fetch("/api/room/replay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: roomCode, hostName }),
+        body: JSON.stringify({ code: roomCode, hostName: userName }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erreur replay");
-
       onReplay(data.quizPlayers, data.code, data.hostName, data.participants);
     } catch (err: any) {
       console.error("Erreur replay:", err);
@@ -1879,31 +1994,22 @@ function MultiResultsScreen({
     }
   };
 
-  const myTotal = answers.length;
+  // ✅ Vérifier si tous les participants ont fini
+  const allParticipantsDone = participantResults.length > 0 && participantResults.every((p) => p.done === true);
+
+  // ✅ Compter les cellules vérifiées
+  const totalCells = playerNames.length * answers.length;
+  const verifiedCells = corrections.length;
+  const allVerifiedCheck = verifiedCells === totalCells;
+
+  // ✅ Trier les résultats pour le classement final
   const sortedResults = [...participantResults].sort(
     (a, b) =>
-      (b.score ?? -1) - (a.score ?? -1) ||
-      (a.avgTimePerQuestion ?? Number.POSITIVE_INFINITY) -
-        (b.avgTimePerQuestion ?? Number.POSITIVE_INFINITY)
+      (b.score ?? 0) - (a.score ?? 0)
   );
   const winner = allDone && sortedResults.length > 0 ? sortedResults[0] : null;
 
-  const allParticipantsDone = participantResults.length > 0 && participantResults.every((p) => p.done === true);
-  
-  if (allParticipantsDone && !allDone && myFinalScore !== null) {
-    setAllDone(true);
-    setWaitingForAll(false);
-    const sorted = [...participantResults].sort(
-      (a, b) =>
-        (b.score ?? -1) - (a.score ?? -1) ||
-        (a.avgTimePerQuestion ?? Number.POSITIVE_INFINITY) -
-          (b.avgTimePerQuestion ?? Number.POSITIVE_INFINITY)
-    );
-    if (sorted.length > 0 && sorted[0]?.name === userName) {
-      setShowConfetti(true);
-    }
-  }
-
+  // ✅ Rendu
   return (
     <div className="min-h-screen p-3 md:p-8">
       {roomNotice && (
@@ -1935,153 +2041,294 @@ function MultiResultsScreen({
         </div>
       )}
 
-      <div className="max-w-2xl mx-auto fade-in space-y-4 md:space-y-6">
+      <div className="max-w-4xl mx-auto fade-in space-y-4 md:space-y-6">
         <div className="text-center">
           <h1 className="text-2xl md:text-4xl font-extrabold mb-1" style={{ color: "var(--accent-color)" }}>
             📊 RÉSULTATS
           </h1>
           <p className="text-xs md:text-base" style={{ color: "rgba(255,255,255,0.5)" }}>
             Mode multijoueur — Room {roomCode}
+            {isHost && roomStatus === "reviewing" && " 🔑 Vous êtes le HOST - Validez les réponses"}
           </p>
         </div>
 
-        {myFinalScore === null && (
+        {/* ─── ÉCRAN D'ATTENTE ─── */}
+        {!allDone && (
           <>
+            <div
+              className="rounded-2xl p-4 md:p-8 text-center space-y-3 md:space-y-4"
+              style={{ backgroundColor: "var(--card-bg)", border: "2px solid var(--accent-color)" }}
+            >
+              <div className="text-3xl md:text-4xl animate-bounce">⏳</div>
+              {myFinalScore !== null && (
+                <p className="text-lg md:text-xl font-bold" style={{ color: "var(--accent-color)" }}>
+                  Votre score : {myFinalScore}/{myTotal}
+                </p>
+              )}
+              <p className="text-xs md:text-base" style={{ color: "rgba(255,255,255,0.6)" }}>
+                {allParticipantsDone ? "Tous les joueurs ont terminé !" : "En attente que tous les joueurs terminent..."}
+              </p>
+
+              <div className="space-y-1 md:space-y-2 text-left max-w-md mx-auto">
+                {participantResults.map((p, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between px-2 md:px-4 py-1.5 md:py-2 rounded-xl text-xs md:text-sm"
+                    style={{
+                      backgroundColor: p.name === userName ? "rgba(255,215,0,0.06)" : "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    <div className="flex items-center gap-1 md:gap-2">
+                      <span className="text-sm md:text-base">{p.name === hostName ? "👑" : "👤"}</span>
+                      <span
+                        className="font-medium text-xs md:text-sm"
+                        style={{ color: p.name === userName ? "var(--accent-color)" : "var(--text-color)" }}
+                      >
+                        {p.name}
+                        {p.name === userName ? " (vous)" : ""}
+                      </span>
+                    </div>
+                    <span
+                      className="text-[0.55rem] md:text-sm font-semibold"
+                      style={{ color: p.done ? "var(--success-color)" : "rgba(255,255,255,0.35)" }}
+                    >
+                      {p.done ? `${p.score}/${p.totalQuestions} ✓ TERMINÉ` : "En cours..."}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-center gap-2 pt-1 md:pt-2">
+                <span
+                  className="inline-block w-1.5 md:w-2 h-1.5 md:h-2 rounded-full animate-bounce"
+                  style={{ backgroundColor: "var(--accent-color)", animationDelay: "0s" }}
+                />
+                <span
+                  className="inline-block w-1.5 md:w-2 h-1.5 md:h-2 rounded-full animate-bounce"
+                  style={{ backgroundColor: "var(--accent-color)", animationDelay: "0.2s" }}
+                />
+                <span
+                  className="inline-block w-1.5 md:w-2 h-1.5 md:h-2 rounded-full animate-bounce"
+                  style={{ backgroundColor: "var(--accent-color)", animationDelay: "0.4s" }}
+                />
+              </div>
+            </div>
+
+            {/* ✅ Le bouton CONFIRMER n'apparaît que si le joueur n'a PAS encore soumis son score */}
+            {myFinalScore === null && !hasSubmittedRef.current && (
+              <button
+                onClick={confirmScore}
+                disabled={hasSubmittedRef.current}
+                className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect ${
+                  hasSubmittedRef.current ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                style={{
+                  backgroundColor: hasSubmittedRef.current ? "var(--text-subtle)" : "var(--accent-color)",
+                  color: "var(--background-color)",
+                  cursor: hasSubmittedRef.current ? "not-allowed" : "pointer",
+                }}
+              >
+                {hasSubmittedRef.current ? "⏳ Envoi en cours..." : `✅ CONFIRMER MON SCORE (${calculatedScore}/${myTotal})`}
+              </button>
+            )}
+
+            {/* ✅ Message quand le joueur a déjà soumis son score */}
+            {myFinalScore !== null && (
+              <div
+                className="rounded-xl p-3 md:p-4 text-center"
+                style={{
+                  backgroundColor: "rgba(34, 197, 94, 0.08)",
+                  border: "1px solid var(--success-color)",
+                }}
+              >
+                <p className="text-sm md:text-base font-semibold" style={{ color: "var(--success-color)" }}>
+                  ✅ Score soumis : {myFinalScore}/{myTotal}
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ─── ÉCRAN DE CORRECTION (HOST) ─── */}
+        {allDone && roomStatus === "reviewing" && (
+          <>
+            <div className="text-center">
+              <p className="text-xs md:text-sm" style={{ color: "var(--text-muted)" }}>
+                {isHost ? (
+                  "👆 Cliquez sur une réponse pour la valider (vert = correct, rouge = faux)"
+                ) : (
+                  "⏳ Le HOST valide les réponses..."
+                )}
+              </p>
+              {isHost && (
+                <p className="text-xs mt-1" style={{ color: "var(--text-subtle)" }}>
+                  {verifiedCells}/{totalCells} réponses vérifiées
+                </p>
+              )}
+            </div>
+
+            {/* Tableau des corrections */}
             <div
               className="rounded-2xl overflow-hidden"
               style={{ backgroundColor: "var(--card-bg)", border: "1px solid var(--card-border)" }}
             >
+              {/* En-tête du tableau */}
               <div
                 className="grid grid-cols-12 gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 text-[0.55rem] md:text-sm font-bold uppercase tracking-wider"
                 style={{ backgroundColor: "var(--primary-color)", color: "var(--accent-color)" }}
               >
                 <div className="col-span-1 text-center">#</div>
-                <div className="col-span-2 text-center">✓</div>
-                <div className="col-span-4 md:col-span-4">Votre Réponse</div>
-                <div className="col-span-5 md:col-span-5">Correction</div>
+                {playerNames.map((name) => (
+                  <div key={name} className="col-span-2 text-center truncate" title={name}>
+                    {name === hostName ? "👑 " : ""}{name}
+                  </div>
+                ))}
+                <div className="col-span-1 text-center">✓</div>
               </div>
-              {answers.map((answer, index) => {
-                const isChecked = checkedAnswers[index];
-                const wasSkipped = answer.userAnswer === "SKIP" || answer.userAnswer === "";
+
+              {/* Lignes du tableau */}
+              {answers.map((answer, questionIndex) => {
+                const correctAnswer = answer.playerName;
                 return (
                   <div
-                    key={index}
-                    className="grid grid-cols-12 gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-4 items-center transition-all duration-300 slide-up"
+                    key={questionIndex}
+                    className="grid grid-cols-12 gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 items-center transition-all duration-300 slide-up"
                     style={{
-                      borderBottom: "1px solid var(--card-border)",
-                      animationDelay: `${index * 0.05}s`,
+                      borderBottom: questionIndex < answers.length - 1 ? "1px solid var(--card-border)" : "none",
+                      animationDelay: `${questionIndex * 0.05}s`,
                     }}
                   >
                     <div className="col-span-1 text-center text-[0.6rem] md:text-sm font-bold" style={{ color: "var(--accent-color)" }}>
-                      {index + 1}
+                      {questionIndex + 1}
                     </div>
-                    <div className="col-span-2 text-center">
-                      <input
-                        type="checkbox"
-                        className="custom-checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleCheck(index)}
-                        aria-label={`Question ${index + 1}`}
-                      />
-                    </div>
-                    <div
-                      className="col-span-4 md:col-span-4 text-[0.6rem] md:text-sm truncate"
-                      style={{
-                        color: wasSkipped ? "rgba(255,255,255,0.3)" : "var(--text-color)",
-                        fontStyle: wasSkipped ? "italic" : "normal",
-                      }}
-                    >
-                      {wasSkipped ? (answer.userAnswer === "SKIP" ? "SKIP" : "-") : answer.userAnswer}
-                    </div>
-                    <div
-                      className="col-span-5 md:col-span-5 text-[0.6rem] md:text-sm font-semibold"
-                      style={{ color: isChecked ? "var(--success-color)" : "var(--error-color)" }}
-                    >
-                      {answer.playerName}
+
+                    {playerNames.map((playerName) => {
+                      const status = getCellStatus(playerName, questionIndex);
+                      
+                      let playerAnswer = "";
+                      if (playerName === hostName) {
+                        const hostAnswer = answers[questionIndex];
+                        playerAnswer = hostAnswer.userAnswer;
+                      } else {
+                        // Pour les autres joueurs, chercher dans participantAnswers
+                        const playerAnswersData = participantAnswers.find(
+                          (p) => p.playerName === playerName
+                        );
+                        if (playerAnswersData && playerAnswersData.answers[questionIndex]) {
+                          playerAnswer = playerAnswersData.answers[questionIndex];
+                        } else {
+                          playerAnswer = "?";
+                        }
+                      }
+
+                      const isCorrect = status === "correct";
+                      const isIncorrect = status === "incorrect";
+                      const isNeutral = status === "neutral";
+
+                      let bgColor = "rgba(255,255,255,0.03)";
+                      let textColor = "var(--text-color)";
+                      let borderColor = "transparent";
+                      let cursor = "default";
+
+                      if (isCorrect) {
+                        bgColor = "rgba(34, 197, 94, 0.15)";
+                        textColor = "var(--success-color)";
+                        borderColor = "var(--success-color)";
+                      } else if (isIncorrect) {
+                        bgColor = "rgba(239, 68, 68, 0.15)";
+                        textColor = "var(--error-color)";
+                        borderColor = "var(--error-color)";
+                      } else if (isNeutral) {
+                        bgColor = "rgba(255,255,255,0.03)";
+                        textColor = "rgba(255,255,255,0.3)";
+                        borderColor = "transparent";
+                      }
+
+                      const isClickable = isHost && roomStatus === "reviewing";
+
+                      return (
+                        <div
+                          key={playerName}
+                          className="col-span-2 text-center text-[0.6rem] md:text-sm truncate rounded-lg px-1 py-1 md:py-2 transition-all duration-200"
+                          style={{
+                            backgroundColor: bgColor,
+                            color: textColor,
+                            border: `1px solid ${borderColor}`,
+                            cursor: isClickable ? "pointer" : "default",
+                            minHeight: "2rem",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          onClick={() => {
+                            if (isClickable) {
+                              handleCellClick(playerName, questionIndex);
+                            }
+                          }}
+                          title={isClickable ? "Cliquez pour valider (vert = correct, rouge = faux)" : ""}
+                        >
+                          {isCorrect && "🟢 "}
+                          {isIncorrect && "🔴 "}
+                          {isNeutral && "⚪ "}
+                          {playerAnswer === "SKIP" || playerAnswer === "" ? "SKIP" : playerAnswer}
+                        </div>
+                      );
+                    })}
+
+                    <div className="col-span-1 text-center text-[0.6rem] md:text-sm font-semibold" style={{ color: "var(--success-color)" }}>
+                      {correctAnswer}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <button
-              onClick={confirmScore}
-              disabled={hasSubmittedRef.current}
-              className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect ${
-                hasSubmittedRef.current ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              style={{ 
-                backgroundColor: hasSubmittedRef.current ? "var(--text-subtle)" : "var(--accent-color)", 
-                color: "var(--background-color)", 
-                cursor: hasSubmittedRef.current ? "not-allowed" : "pointer" 
-              }}
-            >
-              {hasSubmittedRef.current ? "⏳ Envoi en cours..." : "✅ CONFIRMER MON SCORE"}
-            </button>
+            {/* Légende */}
+            <div className="flex flex-wrap justify-center gap-3 md:gap-6 text-xs md:text-sm">
+              <span className="flex items-center gap-1">
+                <span className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(34, 197, 94, 0.15)", border: "1px solid var(--success-color)" }}></span>
+                Correct ✅
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", border: "1px solid var(--error-color)" }}></span>
+                Faux ❌
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid transparent" }}></span>
+                Non vérifié ⚪
+              </span>
+            </div>
+
+            {/* Bouton CONFIRMER pour le HOST */}
+            {isHost && (
+              <button
+                onClick={confirmResults}
+                disabled={!allVerifiedCheck}
+                className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect ${
+                  !allVerifiedCheck ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                style={{
+                  backgroundColor: allVerifiedCheck ? "var(--accent-color)" : "var(--text-subtle)",
+                  color: "var(--background-color)",
+                  cursor: allVerifiedCheck ? "pointer" : "not-allowed",
+                }}
+              >
+                {allVerifiedCheck ? "✅ CONFIRMER LES RÉSULTATS" : `⏳ ${verifiedCells}/${totalCells} vérifiés`}
+              </button>
+            )}
+
+            {/* Message pour les non-HOST */}
+            {!isHost && (
+              <p className="text-center text-xs md:text-sm" style={{ color: "var(--text-muted)" }}>
+                ⏳ Le HOST valide les réponses... ({verifiedCells}/{totalCells} vérifiées)
+              </p>
+            )}
           </>
         )}
 
-        {myFinalScore !== null && !allDone && (
-          <div
-            className="rounded-2xl p-4 md:p-8 text-center space-y-3 md:space-y-4"
-            style={{ backgroundColor: "var(--card-bg)", border: "2px solid var(--accent-color)" }}
-          >
-            <div className="text-3xl md:text-4xl animate-bounce">⏳</div>
-            <p className="text-lg md:text-xl font-bold" style={{ color: "var(--accent-color)" }}>
-              Votre score : {myFinalScore}/{myTotal}
-            </p>
-            <p className="text-xs md:text-base" style={{ color: "rgba(255,255,255,0.6)" }}>
-              En attente que tous les joueurs terminent...
-            </p>
-
-            <div className="space-y-1 md:space-y-2 text-left">
-              {participantResults.map((p, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between px-2 md:px-4 py-1.5 md:py-2 rounded-xl text-xs md:text-sm"
-                  style={{
-                    backgroundColor: p.name === userName ? "rgba(255,215,0,0.06)" : "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <div className="flex items-center gap-1 md:gap-2">
-                    <span className="text-sm md:text-base">{p.name === hostName ? "👑" : "👤"}</span>
-                    <span
-                      className="font-medium text-xs md:text-sm"
-                      style={{ color: p.name === userName ? "var(--accent-color)" : "var(--text-color)" }}
-                    >
-                      {p.name}
-                      {p.name === userName ? " (vous)" : ""}
-                    </span>
-                  </div>
-                  <span
-                    className="text-[0.55rem] md:text-sm font-semibold"
-                    style={{ color: p.done ? "var(--success-color)" : "rgba(255,255,255,0.35)" }}
-                  >
-                    {p.done ? `${p.score}/${p.totalQuestions} ✓` : "En cours..."}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-center gap-2 pt-1 md:pt-2">
-              <span
-                className="inline-block w-1.5 md:w-2 h-1.5 md:h-2 rounded-full animate-bounce"
-                style={{ backgroundColor: "var(--accent-color)", animationDelay: "0s" }}
-              />
-              <span
-                className="inline-block w-1.5 md:w-2 h-1.5 md:h-2 rounded-full animate-bounce"
-                style={{ backgroundColor: "var(--accent-color)", animationDelay: "0.2s" }}
-              />
-              <span
-                className="inline-block w-1.5 md:w-2 h-1.5 md:h-2 rounded-full animate-bounce"
-                style={{ backgroundColor: "var(--accent-color)", animationDelay: "0.4s" }}
-              />
-            </div>
-          </div>
-        )}
-
-        {allDone && myFinalScore !== null && (
+        {/* ─── RÉSULTATS FINAUX ─── */}
+        {allDone && roomStatus === "finished" && (
           <>
             <div
               className="rounded-2xl p-4 md:p-6 text-center space-y-3 md:space-y-4 score-reveal"
@@ -2157,6 +2404,7 @@ function MultiResultsScreen({
               </div>
             </div>
 
+            {/* Boutons REJOUER / MENU */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               {isHost && (
                 <button
@@ -2553,6 +2801,29 @@ export default function Home() {
       }
       setScreen("results");
     } else {
+      // ✅ Mode multijoueur : soumettre automatiquement le score
+      try {
+        const score = quizAnswers.filter(a => a.isCorrect).length;
+        const totalTime = quizAnswers.reduce((acc, a) => acc + a.timeSpent, 0);
+        const avgTime = quizAnswers.length > 0 ? totalTime / quizAnswers.length : 0;
+
+        await fetch("/api/room/score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: roomCode,
+            playerName: userName,
+            score,
+            totalQuestions: quizAnswers.length,
+            avgTimePerQuestion: avgTime,
+          }),
+        });
+
+        console.log("✅ Score soumis automatiquement pour", userName);
+      } catch (error) {
+        console.error("❌ Erreur soumission automatique du score:", error);
+      }
+
       setScreen("multiResults");
     }
   };

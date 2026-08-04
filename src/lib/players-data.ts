@@ -13,7 +13,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Laval",
       "Lille",
-      "1. FC Köln",
+      "FC Köln",
       "Amiens",
       "Rennes",
       "VfB Stuttgart",
@@ -26,7 +26,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Benfica",
       "AS Monaco",
-      "Manchester City"
+      "Manchester City",
+      "Real Madrid"
     ]
   },
   {
@@ -66,7 +67,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Olympique Lyonnais",
       "Real Madrid",
-      "Al-Ittihad"
+      "Al-Ittihad",
+      "Al-Hilal"
     ]
   },
   {
@@ -177,7 +179,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Paris Saint-Germain",
       "RB Leipzig",
-      "Chelsea"
+      "Chelsea",
+      "AC Milan"
     ]
   },
   {
@@ -259,14 +262,15 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "playerId": 23,
     "name": "George Weah",
     "career": [
-      "Mighty Barrolle",
       "Invincible Eleven",
-      "Monaco",
+      "Tonnerre Yaoundé",
+      "AS Monaco",
       "Paris Saint-Germain",
       "AC Milan",
-      "Chelsea",
+      "Chelsea FC",
       "Manchester City",
-      "Marseille"
+      "Marseille",
+      "Al-Jazira Club"
     ]
   },
   {
@@ -318,10 +322,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "playerId": 29,
     "name": "Jordi Alba",
     "career": [
-      "FC Barcelona",
       "Valencia",
-      "Benfica",
-      "Valencia",
+      "Gimnàstic de Tarragone	",
       "FC Barcelona",
       "Inter Miami"
     ]
@@ -346,8 +348,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Inter Milan",
       "Juventus",
       "Real Madrid",
-      "Al-Ahli",
-      "Al-Sadd"
+      "Juventus",
+      "Al-Ahli"
     ]
   },
   {
@@ -461,7 +463,6 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Manchester City",
       "Chelsea",
       "Arsenal",
-      "Chelsea",
       "Feyenoord"
     ]
   },
@@ -581,8 +582,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Admira Wacker",
       "Rapid Wien",
-      "RB Salzburg",
       "RB Leipzig",
+      "RB Salzburg",
       "Bayern Munich",
       "Manchester United",
       "Borussia Dortmund"
@@ -784,7 +785,6 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Lille",
       "Troyes",
       "Dinamo Zagreb",
-      "Lille",
       "Arsenal"
     ]
   },
@@ -875,7 +875,6 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "West Ham United",
       "Swansea City",
-      "West Ham United",
       "Chelsea",
       "Manchester City",
       "New York City FC"
@@ -1232,9 +1231,11 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "playerId": 113,
     "name": "Benjamin Šeško",
     "career": [
-      "NK Domžale",
-      "Red Bull Salzburg",
-      "RB Leipzig"
+      "RB Salzbourg",
+      "FC Liefering",
+      "RB Salzbourg",
+      "RB Leipzig",
+      "Manchester United"
     ]
   },
   {
@@ -1311,7 +1312,6 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "playerId": 120,
     "name": "Leon Bailey",
     "career": [
-      "Trencín",
       "Genk",
       "Bayer Leverkusen",
       "Aston Villa",
