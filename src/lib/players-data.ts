@@ -1094,7 +1094,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Borussia Dortmund",
       "Willem II",
       "Real Sociedad",
-      "Newcastle United"
+      "Newcastle United",
+      "Liverpool FC"
     ]
   },
   {

@@ -3,7 +3,6 @@ import { Room } from "@/models/Room";
 
 export const dynamic = "force-dynamic";
 
-// Interface pour un participant
 interface Participant {
   name: string;
   score: number | null;
@@ -12,7 +11,6 @@ interface Participant {
   done: boolean;
 }
 
-// ✅ GET - Récupérer le statut de la room
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -36,13 +34,27 @@ export async function GET(request: Request) {
       );
     }
 
-    // ✅ Vérifier si tous les participants ont fini (avec typage explicite)
+    // ✅ Vérifier si tous les participants ont fini
     const allDone = room.participants.length > 0 && room.participants.every((p: Participant) => p.done === true);
 
     // ✅ Si tous ont fini et que la room est en "playing", passer en "reviewing"
     if (allDone && room.status === "playing") {
       room.status = "reviewing";
       await room.save();
+    }
+
+    // ✅ Récupérer les réponses des participants
+    // Si le champ n'existe pas, on le crée à partir des participants
+    let participantAnswers = room.participantAnswers || [];
+
+    // ✅ Si participantAnswers est vide mais que les participants ont des réponses,
+    // on les reconstruit à partir des données existantes
+    if (participantAnswers.length === 0 && room.participants.length > 0) {
+      // Pour chaque participant, on crée une entrée vide (sera remplie plus tard)
+      participantAnswers = room.participants.map((p: Participant) => ({
+        playerName: p.name,
+        answers: [], // Vide pour l'instant, sera rempli par les joueurs
+      }));
     }
 
     return Response.json({
@@ -61,6 +73,7 @@ export async function GET(request: Request) {
       totalQuestions: room.players.length,
       allDone,
       quizPlayers: room.players,
+      participantAnswers: participantAnswers, // ✅ Ajouté
     });
   } catch (error) {
     console.error("❌ Status error:", error);
@@ -71,7 +84,6 @@ export async function GET(request: Request) {
   }
 }
 
-// ✅ POST - Mettre à jour le statut de la room
 export async function POST(request: Request) {
   try {
     const { code, status } = await request.json();
@@ -94,7 +106,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // ✅ Vérifier que le statut est valide
     const validStatuses = ["waiting", "playing", "reviewing", "finished"];
     if (!validStatuses.includes(status)) {
       return Response.json(

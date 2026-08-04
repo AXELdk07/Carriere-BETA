@@ -1,6 +1,5 @@
 import connectDB from "@/db/mongodb";
 import { Room } from "@/models/Room";
-import { Leaderboard } from "@/models/Leaderboard";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +25,6 @@ export async function POST(request: Request) {
 
     const { code, playerName, score, totalQuestions, avgTimePerQuestion, answers } = await request.json();
 
-    // Validation des données
     if (!code || !playerName || score === undefined || score === null || !totalQuestions) {
       return Response.json(
         { error: "Données manquantes : code, playerName, score et totalQuestions sont requis" },
@@ -48,18 +46,6 @@ export async function POST(request: Request) {
       );
     }
 
-    if (
-      avgTimePerQuestion !== null &&
-      (typeof avgTimePerQuestion !== "number" ||
-        !Number.isFinite(avgTimePerQuestion) ||
-        avgTimePerQuestion < 0)
-    ) {
-      return Response.json(
-        { error: "Temps moyen invalide" },
-        { status: 400 }
-      );
-    }
-
     const room = await Room.findOne({ code: code.toUpperCase() });
 
     if (!room) {
@@ -69,10 +55,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // ✅ Permettre la soumission en mode "reviewing" aussi
     if (room.status !== "playing" && room.status !== "reviewing") {
       return Response.json(
-        { error: "La partie n'est pas en cours ou en correction" },
+        { error: "La partie n'est pas en cours" },
         { status: 409 }
       );
     }
@@ -93,48 +78,39 @@ export async function POST(request: Request) {
       );
     }
 
-    // ✅ Mise à jour avec avgTimePerQuestion
     participant.score = score;
     participant.totalQuestions = totalQuestions;
     participant.avgTimePerQuestion = avgTimePerQuestion;
     participant.done = true;
 
-    // ✅ Sauvegarder les réponses du joueur si elles sont fournies
+    // ✅ Sauvegarder les réponses du joueur
     if (answers && Array.isArray(answers)) {
-      // Vérifier si participantAnswers existe dans le schéma
-      // Si oui, on l'ajoute, sinon on l'ignore
-      if (room.participantAnswers) {
-        await Room.findOneAndUpdate(
-          { code: code.toUpperCase() },
-          {
-            $push: {
-              participantAnswers: {
-                playerName: playerName.trim(),
-                answers: answers.map((a: Answer) => a.userAnswer),
-              },
-            },
-          }
-        );
+      // Chercher si le joueur existe déjà dans participantAnswers
+      const existingIndex = room.participantAnswers?.findIndex(
+        (p: any) => p.playerName === playerName.trim()
+      ) ?? -1;
+
+      const userAnswers = answers.map((a: Answer) => a.userAnswer);
+
+      if (existingIndex >= 0) {
+        // Mettre à jour les réponses existantes
+        room.participantAnswers[existingIndex].answers = userAnswers;
+      } else {
+        // Ajouter un nouveau participant
+        if (!room.participantAnswers) {
+          room.participantAnswers = [];
+        }
+        room.participantAnswers.push({
+          playerName: playerName.trim(),
+          answers: userAnswers,
+        });
       }
     }
 
     const allDone = room.participants.every((p: Participant) => p.done);
 
     if (allDone) {
-      room.status = "reviewing"; // ✅ Passer en mode "reviewing" au lieu de "finished"
-      
-      // Enregistrer dans le leaderboard global (optionnel)
-      // for (const p of room.participants) {
-      //   if (p.score !== null && p.totalQuestions !== null) {
-      //     await Leaderboard.create({
-      //       userName: p.name,
-      //       score: p.score,
-      //       totalQuestions: p.totalQuestions,
-      //       avgTimePerQuestion: p.avgTimePerQuestion,
-      //       completedAt: new Date(),
-      //     });
-      //   }
-      // }
+      room.status = "reviewing";
     }
 
     await room.save();

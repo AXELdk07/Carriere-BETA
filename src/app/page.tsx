@@ -7,6 +7,7 @@ import {
   faAward,
   faChartColumn,
   faCheck,
+  faCircle,
   faCircleExclamation,
   faCrown,
   faDumbbell,
@@ -53,6 +54,73 @@ interface ParticipantResult {
   totalQuestions: number | null;
   avgTimePerQuestion: number | null;
   done: boolean;
+}
+
+// ─────────────── EXIT CONFIRMATION MODAL ───────────────
+function ExitConfirmationModal({
+  onConfirm,
+  onCancel,
+  isHost = false,
+}: {
+  onConfirm: () => void;
+  onCancel: () => void;
+  isHost?: boolean;
+}) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onCancel();
+      }}
+    >
+      <div className="bg-[var(--card-bg)] border border-[var(--card-border-accent)] rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl">
+        <div className="text-center">
+          <div className="text-5xl mb-4">🚪</div>
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--accent-color)] mb-3">
+            Quitter la partie ?
+          </h2>
+          <p className="text-[var(--text-muted)] text-sm md:text-base mb-6">
+            Voulez-vous vraiment quitter cette partie ?<br />
+            <span className="text-xs" style={{ color: "var(--text-subtle)" }}>
+              {isHost ? "⚠️ En tant qu'hôte, la partie sera interrompue pour tout le monde." : "Vous ne pourrez pas revenir dans cette partie."}
+            </span>
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={onCancel}
+              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02]"
+              style={{
+                backgroundColor: "var(--surface-color)",
+                border: "2px solid var(--card-border)",
+                color: "var(--text-color)",
+                cursor: "pointer",
+              }}
+            >
+              Annuler
+            </button>
+            <button
+              onClick={onConfirm}
+              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02]"
+              style={{
+                backgroundColor: "var(--error-color)",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Oui, quitter
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function RankDisplay({ index }: { index: number }) {
@@ -289,7 +357,7 @@ function FriendLobbyScreen({
     showExitConfirmationRef.current = showExitConfirmation;
   }, [showExitConfirmation]);
 
-  // Gestion du bouton Retour - UN SEUL LISTENER, une seule fois
+  // Gestion du bouton Retour
   useEffect(() => {
     if (!inLobby) return;
 
@@ -323,7 +391,7 @@ function FriendLobbyScreen({
     };
   }, [inLobby]);
 
-  // Nettoyage de l'historique quand on quitte le lobby
+  // Nettoyage de l'historique
   useEffect(() => {
     if (!inLobby && hasPushedHistoryRef.current) {
       window.history.replaceState(null, "", window.location.href);
@@ -429,7 +497,6 @@ function FriendLobbyScreen({
       setInLobby(true);
       startLobbyPolling(data.code, data.quizPlayers, data.hostName);
 
-      // ✅ Sauvegarder les infos pour le refresh
       sessionStorage.setItem("currentRoomCode", data.code);
       sessionStorage.setItem("currentUserName", userName);
       sessionStorage.setItem("isHost", "true");
@@ -464,7 +531,6 @@ function FriendLobbyScreen({
       setInLobby(true);
       startLobbyPolling(data.code, data.quizPlayers, data.hostName);
 
-      // ✅ Sauvegarder les infos pour le refresh
       sessionStorage.setItem("currentRoomCode", data.code);
       sessionStorage.setItem("currentUserName", userName);
       sessionStorage.setItem("isHost", "false");
@@ -496,7 +562,6 @@ function FriendLobbyScreen({
     }
   };
 
-  // Fonction pour quitter la room avec confirmation
   const handleCancelLobby = (confirmed: boolean = false) => {
     if (!confirmed) {
       setShowExitConfirmation(true);
@@ -529,10 +594,10 @@ function FriendLobbyScreen({
         hasPushedHistoryRef.current = false;
         isLeavingRef.current = false;
 
-        // ✅ Nettoyer sessionStorage
         sessionStorage.removeItem("currentRoomCode");
         sessionStorage.removeItem("currentUserName");
         sessionStorage.removeItem("isHost");
+        onBack();
       } catch (err: any) {
         setErrorMsg(err.message);
         setShowExitConfirmation(false);
@@ -543,10 +608,8 @@ function FriendLobbyScreen({
     void leaveRoom();
   };
 
-  // Fonction pour fermer le modal sans quitter
   const handleCancelExit = () => {
     setShowExitConfirmation(false);
-    // Réarmer le piège en repoussant un état
     window.history.pushState({ page: "lobby" }, "", window.location.href);
   };
 
@@ -579,7 +642,7 @@ function FriendLobbyScreen({
               <p className="heading-md flex items-center gap-2 text-xs md:text-sm">
                 <FontAwesomeIcon icon={faGamepad} /> Joueurs connectés
               </p>
-              <span className="badge">
+              <span className="badge text-[0.55rem] md:text-xs">
                 {participants.length} joueur{participants.length > 1 ? "s" : ""}
               </span>
             </div>
@@ -587,7 +650,7 @@ function FriendLobbyScreen({
               {participants.map((name, idx) => (
                 <div
                   key={idx}
-                  className={`flex items-center justify-between px-2 md:px-4 py-2 md:py-3 rounded-xl slide-up ${
+                  className={`flex flex-wrap items-center justify-between px-2 md:px-4 py-2 md:py-3 rounded-xl slide-up gap-1 ${
                     name === userName ? "table-row--highlight" : ""
                   }`}
                   style={{
@@ -596,18 +659,18 @@ function FriendLobbyScreen({
                     animationDelay: `${idx * 0.05}s`,
                   }}
                 >
-                  <div className="flex items-center gap-2 md:gap-3">
+                  <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-[120px]">
                     <span className="text-sm md:text-lg" style={{ color: name === hostName ? "var(--accent-color)" : "var(--text-muted)" }}>
                       <FontAwesomeIcon icon={name === hostName ? faCrown : faUser} />
                     </span>
                     <span
-                      className="font-semibold text-sm md:text-base"
+                      className="font-semibold text-xs md:text-base truncate"
                       style={{ color: name === userName ? "var(--accent-color)" : "var(--text-color)" }}
                     >
                       {name}{name === userName ? " (vous)" : ""}
                     </span>
                   </div>
-                  {name === hostName && <span className="badge badge--host text-[0.55rem] md:text-xs">Host</span>}
+                  {name === hostName && <span className="badge badge--host text-[0.5rem] md:text-xs ml-auto">👑 Host</span>}
                 </div>
               ))}
             </div>
@@ -669,11 +732,11 @@ function FriendLobbyScreen({
           </button>
         </div>
 
-        {/* Modal de confirmation - composant EXTERNE */}
         {showExitConfirmation && (
           <ExitConfirmationModal
             onConfirm={() => handleCancelLobby(true)}
             onCancel={handleCancelExit}
+            isHost={isHost}
           />
         )}
       </div>
@@ -749,68 +812,6 @@ function FriendLobbyScreen({
   );
 }
 
-// ─────────────── EXIT CONFIRMATION MODAL (hors de FriendLobbyScreen) ───────────────
-function ExitConfirmationModal({
-  onConfirm,
-  onCancel,
-}: {
-  onConfirm: () => void;
-  onCancel: () => void;
-}) {
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, []);
-
-  return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onCancel();
-      }}
-    >
-      <div className="bg-[var(--card-bg)] border border-[var(--card-border-accent)] rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl">
-        <div className="text-center">
-          <div className="text-5xl mb-4">🚪</div>
-          <h2 className="text-xl md:text-2xl font-bold text-[var(--accent-color)] mb-3">
-            Quitter la room ?
-          </h2>
-          <p className="text-[var(--text-muted)] text-sm md:text-base mb-6">
-            Voulez-vous vraiment quitter cette room ?
-          </p>
-          <div className="flex gap-3">
-            <button
-              onClick={onCancel}
-              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02]"
-              style={{
-                backgroundColor: "var(--surface-color)",
-                border: "2px solid var(--card-border)",
-                color: "var(--text-color)",
-                cursor: "pointer",
-              }}
-            >
-              Annuler
-            </button>
-            <button
-              onClick={onConfirm}
-              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02]"
-              style={{
-                backgroundColor: "var(--error-color)",
-                color: "white",
-                cursor: "pointer",
-              }}
-            >
-              Oui, quitter
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─────────────── QUIZ SCREEN ───────────────
 function QuizScreen({
   players,
@@ -838,12 +839,79 @@ function QuizScreen({
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [answers, setAnswers] = useState<Answer[]>(initialAnswers);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const hasProcessedRef = useRef(false);
   const timeLeftRef = useRef<number>(initialTime);
   const isTimerActiveRef = useRef(false);
+
+  // Refs pour la gestion du popstate
+  const isLeavingRef = useRef(false);
+  const isPopStateHandlingRef = useRef(false);
+  const hasPushedHistoryRef = useRef(false);
+  const showExitConfirmationRef = useRef(showExitConfirmation);
+
+  // Met à jour le ref
+  useEffect(() => {
+    showExitConfirmationRef.current = showExitConfirmation;
+  }, [showExitConfirmation]);
+
+  // Gestion du bouton Retour
+  useEffect(() => {
+    if (!onQuit) return;
+
+    if (!hasPushedHistoryRef.current) {
+      window.history.pushState({ page: "quiz" }, "", window.location.href);
+      hasPushedHistoryRef.current = true;
+    }
+
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+
+      if (isLeavingRef.current) return;
+      if (isPopStateHandlingRef.current) return;
+      isPopStateHandlingRef.current = true;
+
+      window.history.pushState({ page: "quiz" }, "", window.location.href);
+
+      if (!showExitConfirmationRef.current) {
+        setShowExitConfirmation(true);
+      }
+
+      setTimeout(() => {
+        isPopStateHandlingRef.current = false;
+      }, 300);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [onQuit]);
+
+  // Nettoyage
+  useEffect(() => {
+    if (!onQuit && hasPushedHistoryRef.current) {
+      window.history.replaceState(null, "", window.location.href);
+      hasPushedHistoryRef.current = false;
+    }
+  }, [onQuit]);
+
+  const handleConfirmExit = () => {
+    isLeavingRef.current = true;
+    setShowExitConfirmation(false);
+    hasPushedHistoryRef.current = false;
+    window.history.replaceState(null, "", window.location.href);
+    if (onQuit) onQuit();
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
+    window.history.pushState({ page: "quiz" }, "", window.location.href);
+  };
 
   const currentPlayer = players[currentIndex];
   const isLastQuestion = currentIndex === players.length - 1;
@@ -890,7 +958,6 @@ function QuizScreen({
       if (isLastQuestion) {
         sessionStorage.removeItem("quizState");
         setAnswers(newAnswers);
-        // ✅ Soumettre le score automatiquement à la fin du quiz
         onComplete(newAnswers);
         return;
       }
@@ -951,9 +1018,6 @@ function QuizScreen({
   }, [currentIndex]);
 
   useEffect(() => {
-  }, [processAnswer]);
-
-  useEffect(() => {
     const timeout = setTimeout(() => inputRef.current?.focus(), 100);
     return () => clearTimeout(timeout);
   }, [currentIndex]);
@@ -1003,7 +1067,7 @@ function QuizScreen({
         <div className="flex items-center gap-2 md:gap-3">
           {onQuit && (
             <button
-              onClick={onQuit}
+              onClick={() => setShowExitConfirmation(true)}
               title="Retourner au menu principal"
               className="btn-football px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-[0.65rem] md:text-sm font-semibold transition-all duration-200 flex items-center gap-1"
               style={{
@@ -1198,6 +1262,13 @@ function QuizScreen({
           </div>
         </div>
       </div>
+
+      {showExitConfirmation && (
+        <ExitConfirmationModal
+          onConfirm={handleConfirmExit}
+          onCancel={handleCancelExit}
+        />
+      )}
     </div>
   );
 }
@@ -1647,7 +1718,7 @@ function ResultsScreen({
   );
 }
 
-// ─────────────── MULTI RESULTS SCREEN (CORRIGÉ) ───────────────
+// ─────────────── MULTI RESULTS SCREEN (RESPONSIVE) ───────────────
 function MultiResultsScreen({
   answers,
   userName,
@@ -1691,6 +1762,7 @@ function MultiResultsScreen({
   const [allVerified, setAllVerified] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isReplaying, setIsReplaying] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState<
     Array<{
       left: string;
@@ -1707,16 +1779,66 @@ function MultiResultsScreen({
   const hasRedirectedRef = useRef(false);
   const isHost = userName === hostName;
   const myTotal = answers.length;
+  const playerNames = participants;
 
-  // ✅ Calculer le score automatique
+  // Refs pour la gestion du popstate
+  const isLeavingRef = useRef(false);
+  const isPopStateHandlingRef = useRef(false);
+  const hasPushedHistoryRef = useRef(false);
+  const showExitConfirmationRef = useRef(showExitConfirmation);
+
+  // Met à jour le ref
+  useEffect(() => {
+    showExitConfirmationRef.current = showExitConfirmation;
+  }, [showExitConfirmation]);
+
+  // Gestion du bouton Retour - UNIQUEMENT pour reviewing et finished
+  useEffect(() => {
+    // Ne pas bloquer si la room est en "waiting" ou "playing"
+    if (roomStatus === "waiting" || roomStatus === "playing") return;
+
+    if (!hasPushedHistoryRef.current) {
+      window.history.pushState({ page: "multiResults" }, "", window.location.href);
+      hasPushedHistoryRef.current = true;
+    }
+
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+
+      if (isLeavingRef.current) return;
+      if (isPopStateHandlingRef.current) return;
+      isPopStateHandlingRef.current = true;
+
+      window.history.pushState({ page: "multiResults" }, "", window.location.href);
+
+      if (!showExitConfirmationRef.current) {
+        setShowExitConfirmation(true);
+      }
+
+      setTimeout(() => {
+        isPopStateHandlingRef.current = false;
+      }, 300);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [roomStatus]);
+
+  // Nettoyage de l'historique quand la partie est terminée
+  useEffect(() => {
+    if (roomStatus === "finished" && hasPushedHistoryRef.current) {
+      window.history.replaceState(null, "", window.location.href);
+      hasPushedHistoryRef.current = false;
+    }
+  }, [roomStatus]);
+
   const calculatedScore = answers.filter(a => a.isCorrect).length;
   const totalTime = answers.reduce((acc, a) => acc + a.timeSpent, 0);
   const avgTime = answers.length > 0 ? totalTime / answers.length : null;
 
-  // ✅ Obtenir les noms des joueurs (participants)
-  const playerNames = participants;
-
-  // ✅ Fonction pour vérifier si une cellule est corrigée
   const isCellCorrect = (playerName: string, questionIndex: number): boolean | null => {
     const correction = corrections.find(
       (c) => c.playerName === playerName && c.questionIndex === questionIndex
@@ -1725,7 +1847,6 @@ function MultiResultsScreen({
     return null;
   };
 
-  // ✅ Fonction pour obtenir le statut d'une cellule
   const getCellStatus = (playerName: string, questionIndex: number): "correct" | "incorrect" | "neutral" => {
     const result = isCellCorrect(playerName, questionIndex);
     if (result === true) return "correct";
@@ -1733,7 +1854,6 @@ function MultiResultsScreen({
     return "neutral";
   };
 
-  // ✅ Fonction pour le HOST : clic sur une cellule
   const handleCellClick = (playerName: string, questionIndex: number) => {
     if (!isHost) return;
     if (roomStatus !== "reviewing") return;
@@ -1765,7 +1885,6 @@ function MultiResultsScreen({
     saveCorrections(newCorrections);
   };
 
-  // ✅ Sauvegarder les corrections sur le serveur
   const saveCorrections = async (newCorrections: typeof corrections) => {
     try {
       const response = await fetch("/api/room/correct", {
@@ -1785,7 +1904,14 @@ function MultiResultsScreen({
     }
   };
 
-  // ✅ Polling pour les mises à jour
+  // Force la mise à jour quand corrections change
+  useEffect(() => {
+    const total = playerNames.length * answers.length;
+    const verified = corrections.length;
+    const allVerified = verified === total;
+    setAllVerified(allVerified);
+  }, [corrections, playerNames.length, answers.length]);
+
   useEffect(() => {
     const pollStatus = async () => {
       try {
@@ -1842,7 +1968,6 @@ function MultiResultsScreen({
     };
   }, [roomCode, userName, onReplay]);
 
-  // ✅ Effet pour les confettis
   useEffect(() => {
     if (showConfetti) {
       const colors = ["#ffd700", "#44ff44", "#ff4444", "#4444ff", "#ff44ff", "#44ffff"];
@@ -1861,7 +1986,6 @@ function MultiResultsScreen({
     }
   }, [showConfetti]);
 
-  // ✅ Confirmer le score (pour les joueurs non-HOST) - Déprécié car automatique
   const confirmScore = async () => {
     if (hasSubmittedRef.current) return;
     hasSubmittedRef.current = true;
@@ -1894,6 +2018,7 @@ function MultiResultsScreen({
           score,
           totalQuestions: answers.length,
           avgTimePerQuestion: avgTime,
+          answers: answers,
         }),
       });
 
@@ -1914,12 +2039,29 @@ function MultiResultsScreen({
     setWaitingForAll(true);
   };
 
-  // ✅ Confirmer les résultats (pour le HOST)
   const confirmResults = async () => {
-    if (!isHost) return;
-    if (!allVerified) return;
+    console.log("🟢 confirmResults appelée !");
+    console.log("isHost:", isHost);
+    console.log("allVerified:", allVerified);
+    console.log("corrections:", corrections);
+    console.log("corrections.length:", corrections.length);
+    console.log("playerNames.length:", playerNames.length);
+    console.log("answers.length:", answers.length);
+    console.log("totalCells:", playerNames.length * answers.length);
+    
+    if (!isHost) {
+      console.log("❌ Pas le host");
+      return;
+    }
+    
+    if (!allVerified) {
+      console.log("❌ Pas toutes les cellules vérifiées");
+      return;
+    }
 
     try {
+      console.log("✅ Tout est bon, on sauvegarde...");
+      
       const finalScores = participantResults.map((p) => {
         let score = 0;
         for (let i = 0; i < answers.length; i++) {
@@ -1959,6 +2101,8 @@ function MultiResultsScreen({
         }),
       });
 
+      console.log("✅ Résultats sauvegardés !");
+      
       setParticipantResults(finalScores as ParticipantResult[]);
       setAllDone(true);
       setWaitingForAll(false);
@@ -1970,11 +2114,10 @@ function MultiResultsScreen({
         setShowConfetti(true);
       }
     } catch (error) {
-      console.error("Erreur confirmation résultats:", error);
+      console.error("❌ Erreur confirmation résultats:", error);
     }
   };
 
-  // ✅ Replay
   const handleReplay = async () => {
     if (isReplaying) return;
     setIsReplaying(true);
@@ -1994,22 +2137,41 @@ function MultiResultsScreen({
     }
   };
 
-  // ✅ Vérifier si tous les participants ont fini
-  const allParticipantsDone = participantResults.length > 0 && participantResults.every((p) => p.done === true);
+  const handleConfirmExit = async () => {
+    isLeavingRef.current = true;
 
-  // ✅ Compter les cellules vérifiées
+    try {
+      await fetch("/api/room/leave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: roomCode, userName }),
+      });
+    } catch (error) {
+      console.error("Erreur en quittant la room:", error);
+    }
+
+    setShowExitConfirmation(false);
+    hasPushedHistoryRef.current = false;
+    window.history.replaceState(null, "", window.location.href);
+    isLeavingRef.current = false;
+    onHome();
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
+    window.history.pushState({ page: "multiResults" }, "", window.location.href);
+  };
+
+  const allParticipantsDone = participantResults.length > 0 && participantResults.every((p) => p.done === true);
   const totalCells = playerNames.length * answers.length;
   const verifiedCells = corrections.length;
   const allVerifiedCheck = verifiedCells === totalCells;
 
-  // ✅ Trier les résultats pour le classement final
   const sortedResults = [...participantResults].sort(
-    (a, b) =>
-      (b.score ?? 0) - (a.score ?? 0)
+    (a, b) => (b.score ?? 0) - (a.score ?? 0)
   );
   const winner = allDone && sortedResults.length > 0 ? sortedResults[0] : null;
 
-  // ✅ Rendu
   return (
     <div className="min-h-screen p-3 md:p-8">
       {roomNotice && (
@@ -2052,7 +2214,7 @@ function MultiResultsScreen({
           </p>
         </div>
 
-        {/* ─── ÉCRAN D'ATTENTE ─── */}
+        {/* ÉCRAN D'ATTENTE */}
         {!allDone && (
           <>
             <div
@@ -2073,16 +2235,16 @@ function MultiResultsScreen({
                 {participantResults.map((p, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between px-2 md:px-4 py-1.5 md:py-2 rounded-xl text-xs md:text-sm"
+                    className="flex flex-wrap items-center justify-between px-2 md:px-4 py-1.5 md:py-2 rounded-xl text-xs md:text-sm gap-1"
                     style={{
                       backgroundColor: p.name === userName ? "rgba(255,215,0,0.06)" : "rgba(255,255,255,0.03)",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   >
-                    <div className="flex items-center gap-1 md:gap-2">
+                    <div className="flex items-center gap-1 md:gap-2 flex-1 min-w-[100px]">
                       <span className="text-sm md:text-base">{p.name === hostName ? "👑" : "👤"}</span>
                       <span
-                        className="font-medium text-xs md:text-sm"
+                        className="font-medium text-xs md:text-sm truncate"
                         style={{ color: p.name === userName ? "var(--accent-color)" : "var(--text-color)" }}
                       >
                         {p.name}
@@ -2090,10 +2252,11 @@ function MultiResultsScreen({
                       </span>
                     </div>
                     <span
-                      className="text-[0.55rem] md:text-sm font-semibold"
+                      className="text-[0.5rem] md:text-sm font-semibold ml-auto"
                       style={{ color: p.done ? "var(--success-color)" : "rgba(255,255,255,0.35)" }}
                     >
-                      {p.done ? `${p.score}/${p.totalQuestions} ✓ TERMINÉ` : "En cours..."}
+                      {p.done ? "✅" : "⏳"}
+                      <span className="hidden sm:inline ml-1">{p.done ? "TERMINÉ" : "En cours..."}</span>
                     </span>
                   </div>
                 ))}
@@ -2115,25 +2278,6 @@ function MultiResultsScreen({
               </div>
             </div>
 
-            {/* ✅ Le bouton CONFIRMER n'apparaît que si le joueur n'a PAS encore soumis son score */}
-            {myFinalScore === null && !hasSubmittedRef.current && (
-              <button
-                onClick={confirmScore}
-                disabled={hasSubmittedRef.current}
-                className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect ${
-                  hasSubmittedRef.current ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                style={{
-                  backgroundColor: hasSubmittedRef.current ? "var(--text-subtle)" : "var(--accent-color)",
-                  color: "var(--background-color)",
-                  cursor: hasSubmittedRef.current ? "not-allowed" : "pointer",
-                }}
-              >
-                {hasSubmittedRef.current ? "⏳ Envoi en cours..." : `✅ CONFIRMER MON SCORE (${calculatedScore}/${myTotal})`}
-              </button>
-            )}
-
-            {/* ✅ Message quand le joueur a déjà soumis son score */}
             {myFinalScore !== null && (
               <div
                 className="rounded-xl p-3 md:p-4 text-center"
@@ -2150,184 +2294,311 @@ function MultiResultsScreen({
           </>
         )}
 
-        {/* ─── ÉCRAN DE CORRECTION (HOST) ─── */}
+        {/* ÉCRAN DE CORRECTION (HOST) */}
         {allDone && roomStatus === "reviewing" && (
           <>
             <div className="text-center">
               <p className="text-xs md:text-sm" style={{ color: "var(--text-muted)" }}>
                 {isHost ? (
-                  "👆 Cliquez sur une réponse pour la valider (vert = correct, rouge = faux)"
+                  "👆 Cliquez sur une réponse pour la valider"
                 ) : (
                   "⏳ Le HOST valide les réponses..."
                 )}
               </p>
               {isHost && (
-                <p className="text-xs mt-1" style={{ color: "var(--text-subtle)" }}>
-                  {verifiedCells}/{totalCells} réponses vérifiées
-                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 mt-2 text-[0.6rem] md:text-sm">
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 rounded" style={{ backgroundColor: "rgba(34, 197, 94, 0.3)", border: "1px solid var(--success-color)" }}></span>
+                    <span style={{ color: "var(--success-color)" }}>Correct</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 rounded" style={{ backgroundColor: "rgba(239, 68, 68, 0.3)", border: "1px solid var(--error-color)" }}></span>
+                    <span style={{ color: "var(--error-color)" }}>Faux</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 rounded" style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}></span>
+                    <span style={{ color: "var(--text-subtle)" }}>Non vérifié</span>
+                  </span>
+                  <span className="text-xs font-bold" style={{ color: "var(--accent-color)" }}>
+                    {verifiedCells}/{totalCells} ✅
+                  </span>
+                </div>
               )}
             </div>
 
-            {/* Tableau des corrections */}
+            {/* Tableau responsive - ESPACEMENT DYNAMIQUE */}
             <div
-              className="rounded-2xl overflow-hidden"
-              style={{ backgroundColor: "var(--card-bg)", border: "1px solid var(--card-border)" }}
+              className="rounded-2xl overflow-hidden shadow-lg"
+              style={{ 
+                backgroundColor: "var(--card-bg)", 
+                border: "1px solid var(--card-border)",
+                overflowX: "auto",
+                WebkitOverflowScrolling: "touch",
+                touchAction: "pan-x",
+              }}
             >
-              {/* En-tête du tableau */}
-              <div
-                className="grid grid-cols-12 gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 text-[0.55rem] md:text-sm font-bold uppercase tracking-wider"
-                style={{ backgroundColor: "var(--primary-color)", color: "var(--accent-color)" }}
-              >
-                <div className="col-span-1 text-center">#</div>
-                {playerNames.map((name) => (
-                  <div key={name} className="col-span-2 text-center truncate" title={name}>
-                    {name === hostName ? "👑 " : ""}{name}
-                  </div>
-                ))}
-                <div className="col-span-1 text-center">✓</div>
-              </div>
-
-              {/* Lignes du tableau */}
-              {answers.map((answer, questionIndex) => {
-                const correctAnswer = answer.playerName;
-                return (
-                  <div
-                    key={questionIndex}
-                    className="grid grid-cols-12 gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 items-center transition-all duration-300 slide-up"
-                    style={{
-                      borderBottom: questionIndex < answers.length - 1 ? "1px solid var(--card-border)" : "none",
-                      animationDelay: `${questionIndex * 0.05}s`,
-                    }}
-                  >
-                    <div className="col-span-1 text-center text-[0.6rem] md:text-sm font-bold" style={{ color: "var(--accent-color)" }}>
-                      {questionIndex + 1}
+              <div style={{ 
+                minWidth: `${Math.max(playerNames.length * 140 + 80, 400)}px`,
+                padding: "0 8px",
+              }}>
+                {/* En-tête */}
+                <div
+                  className="grid px-2 md:px-4 py-2 md:py-3 text-[0.55rem] md:text-sm font-bold uppercase tracking-wider"
+                  style={{ 
+                    backgroundColor: "rgba(20, 83, 45, 0.6)",
+                    color: "var(--accent-color)",
+                    borderBottom: "2px solid var(--card-border-accent)",
+                    gridTemplateColumns: `50px repeat(${playerNames.length}, 1fr) 130px`,
+                    gap: "12px",
+                  }}
+                >
+                  <div className="text-center" style={{ 
+                    height: "40px", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center",
+                    minWidth: "50px",
+                  }}>#</div>
+                  
+                  {playerNames.map((name) => (
+                    <div 
+                      key={name} 
+                      className="text-center truncate font-semibold"
+                      style={{ 
+                        color: name === hostName ? "var(--accent-color)" : "var(--text-muted)",
+                        fontWeight: name === hostName ? "700" : "500",
+                        height: "40px",
+                        minWidth: "100px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingRight: "12px",
+                      }}
+                      title={name}
+                    >
+                      {name === hostName && <FontAwesomeIcon icon={faCrown} className="mr-1 text-[0.5rem] md:text-xs" style={{ color: "var(--accent-color)" }} />}
+                      <span className="text-[0.55rem] md:text-sm">{name}</span>
                     </div>
+                  ))}
+                  
+                  <div className="text-center font-bold" style={{ 
+                    color: "var(--accent-color)", 
+                    height: "40px", 
+                    minWidth: "130px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>✓ CORRECTION</div>
+                </div>
 
-                    {playerNames.map((playerName) => {
-                      const status = getCellStatus(playerName, questionIndex);
-                      
-                      let playerAnswer = "";
-                      if (playerName === hostName) {
-                        const hostAnswer = answers[questionIndex];
-                        playerAnswer = hostAnswer.userAnswer;
-                      } else {
-                        // Pour les autres joueurs, chercher dans participantAnswers
-                        const playerAnswersData = participantAnswers.find(
-                          (p) => p.playerName === playerName
-                        );
-                        if (playerAnswersData && playerAnswersData.answers[questionIndex]) {
-                          playerAnswer = playerAnswersData.answers[questionIndex];
+                {/* Lignes */}
+                {answers.map((answer, questionIndex) => {
+                  const correctAnswer = answer.playerName;
+                  return (
+                    <div
+                      key={questionIndex}
+                      className="grid px-2 md:px-4 py-1 items-center transition-all duration-200 hover:bg-white/5"
+                      style={{
+                        borderBottom: questionIndex < answers.length - 1 ? "1px solid var(--card-border)" : "none",
+                        backgroundColor: questionIndex % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+                        gridTemplateColumns: `50px repeat(${playerNames.length}, 1fr) 130px`,
+                        gap: "12px",
+                        minHeight: "50px",
+                      }}
+                    >
+                      {/* Colonne # */}
+                      <div className="text-center font-bold" style={{ 
+                        color: "var(--text-muted)", 
+                        height: "40px", 
+                        minWidth: "50px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "clamp(0.6rem, 1vw, 0.875rem)",
+                      }}>
+                        {questionIndex + 1}
+                      </div>
+
+                      {/* Colonnes des joueurs */}
+                      {playerNames.map((playerName) => {
+                        const status = getCellStatus(playerName, questionIndex);
+                        
+                        let playerAnswer = "";
+                        if (playerName === hostName) {
+                          const hostAnswer = answers[questionIndex];
+                          playerAnswer = hostAnswer.userAnswer;
                         } else {
-                          playerAnswer = "?";
+                          const playerAnswersData = participantAnswers.find(
+                            (p) => p.playerName === playerName
+                          );
+                          if (playerAnswersData && playerAnswersData.answers[questionIndex]) {
+                            playerAnswer = playerAnswersData.answers[questionIndex];
+                          } else {
+                            playerAnswer = "?";
+                          }
                         }
-                      }
 
-                      const isCorrect = status === "correct";
-                      const isIncorrect = status === "incorrect";
-                      const isNeutral = status === "neutral";
+                        const isCorrect = status === "correct";
+                        const isIncorrect = status === "incorrect";
+                        const isNeutral = status === "neutral";
 
-                      let bgColor = "rgba(255,255,255,0.03)";
-                      let textColor = "var(--text-color)";
-                      let borderColor = "transparent";
-                      let cursor = "default";
+                        let bgColor = "rgba(255,255,255,0.03)";
+                        let textColor = "var(--text-color)";
+                        let borderColor = "transparent";
+                        let borderWidth = "1px";
+                        let icon = null;
 
-                      if (isCorrect) {
-                        bgColor = "rgba(34, 197, 94, 0.15)";
-                        textColor = "var(--success-color)";
-                        borderColor = "var(--success-color)";
-                      } else if (isIncorrect) {
-                        bgColor = "rgba(239, 68, 68, 0.15)";
-                        textColor = "var(--error-color)";
-                        borderColor = "var(--error-color)";
-                      } else if (isNeutral) {
-                        bgColor = "rgba(255,255,255,0.03)";
-                        textColor = "rgba(255,255,255,0.3)";
-                        borderColor = "transparent";
-                      }
+                        if (isCorrect) {
+                          bgColor = "rgba(34, 197, 94, 0.12)";
+                          textColor = "var(--success-color)";
+                          borderColor = "var(--success-color)";
+                          icon = <FontAwesomeIcon icon={faCheck} className="text-[0.4rem] md:text-sm mr-1" style={{ color: "var(--success-color)" }} />;
+                        } else if (isIncorrect) {
+                          bgColor = "rgba(239, 68, 68, 0.12)";
+                          textColor = "var(--error-color)";
+                          borderColor = "var(--error-color)";
+                          icon = <FontAwesomeIcon icon={faXmark} className="text-[0.4rem] md:text-sm mr-1" style={{ color: "var(--error-color)" }} />;
+                        } else if (isNeutral) {
+                          bgColor = "rgba(255,255,255,0.02)";
+                          textColor = "rgba(255,255,255,0.25)";
+                          borderColor = "rgba(255,255,255,0.05)";
+                          icon = <FontAwesomeIcon icon={faCircle} className="text-[0.3rem] md:text-xs mr-1" style={{ color: "rgba(255,255,255,0.15)" }} />;
+                        }
 
-                      const isClickable = isHost && roomStatus === "reviewing";
+                        const isClickable = isHost && roomStatus === "reviewing";
 
-                      return (
-                        <div
-                          key={playerName}
-                          className="col-span-2 text-center text-[0.6rem] md:text-sm truncate rounded-lg px-1 py-1 md:py-2 transition-all duration-200"
-                          style={{
-                            backgroundColor: bgColor,
-                            color: textColor,
-                            border: `1px solid ${borderColor}`,
-                            cursor: isClickable ? "pointer" : "default",
-                            minHeight: "2rem",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          onClick={() => {
-                            if (isClickable) {
-                              handleCellClick(playerName, questionIndex);
-                            }
-                          }}
-                          title={isClickable ? "Cliquez pour valider (vert = correct, rouge = faux)" : ""}
-                        >
-                          {isCorrect && "🟢 "}
-                          {isIncorrect && "🔴 "}
-                          {isNeutral && "⚪ "}
-                          {playerAnswer === "SKIP" || playerAnswer === "" ? "SKIP" : playerAnswer}
-                        </div>
-                      );
-                    })}
+                        return (
+                          <div
+                            key={playerName}
+                            className="text-center rounded-lg transition-all duration-200 font-medium"
+                            style={{
+                              backgroundColor: bgColor,
+                              color: textColor,
+                              border: `${borderWidth} solid ${borderColor}`,
+                              cursor: isClickable ? "pointer" : "default",
+                              height: "40px",
+                              minWidth: "80px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "0.25rem",
+                              fontSize: "clamp(0.5rem, 1vw, 0.875rem)",
+                              padding: "0.25rem 0.75rem",
+                              marginRight: "4px",
+                            }}
+                            onClick={() => {
+                              if (isClickable) {
+                                handleCellClick(playerName, questionIndex);
+                              }
+                            }}
+                            title={isClickable ? "Cliquez pour valider" : ""}
+                          >
+                            {icon}
+                            {playerAnswer === "SKIP" || playerAnswer === "" ? (
+                              <span className="font-bold text-[0.45rem] md:text-sm uppercase tracking-wider" style={{ opacity: 0.6 }}>
+                                SKIP
+                              </span>
+                            ) : (
+                              <span className="truncate text-[0.45rem] md:text-sm font-medium">{playerAnswer || "?"}</span>
+                            )}
+                          </div>
+                        );
+                      })}
 
-                    <div className="col-span-1 text-center text-[0.6rem] md:text-sm font-semibold" style={{ color: "var(--success-color)" }}>
-                      {correctAnswer}
+                      {/* ✅ Colonne de correction */}
+                      <div className="text-center flex items-center justify-center gap-1" style={{ 
+                        color: "var(--accent-color)",
+                        fontWeight: "600",
+                        height: "40px",
+                        minWidth: "130px",
+                        padding: "0.25rem 0.5rem",
+                      }}>
+                        <FontAwesomeIcon icon={faCheck} className="text-[0.4rem] md:text-sm" style={{ color: "var(--accent-color)" }} />
+                        <span className="text-[0.4rem] md:text-sm font-semibold whitespace-nowrap overflow-visible">
+                          {correctAnswer}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
             {/* Légende */}
-            <div className="flex flex-wrap justify-center gap-3 md:gap-6 text-xs md:text-sm">
-              <span className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(34, 197, 94, 0.15)", border: "1px solid var(--success-color)" }}></span>
-                Correct ✅
+            <div className="flex flex-wrap justify-center gap-1 md:gap-3 text-[0.5rem] md:text-sm py-2">
+              <span className="flex items-center gap-1 px-2 md:px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(34, 197, 94, 0.08)", border: "1px solid rgba(34, 197, 94, 0.2)" }}>
+                <FontAwesomeIcon icon={faCheck} className="text-[0.4rem] md:text-xs" style={{ color: "var(--success-color)" }} />
+                <span style={{ color: "var(--text-muted)" }}>Correct</span>
               </span>
-              <span className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", border: "1px solid var(--error-color)" }}></span>
-                Faux ❌
+              <span className="flex items-center gap-1 px-2 md:px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.2)" }}>
+                <FontAwesomeIcon icon={faXmark} className="text-[0.4rem] md:text-xs" style={{ color: "var(--error-color)" }} />
+                <span style={{ color: "var(--text-muted)" }}>Faux</span>
               </span>
-              <span className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded" style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid transparent" }}></span>
-                Non vérifié ⚪
+              <span className="flex items-center gap-1 px-2 md:px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <FontAwesomeIcon icon={faCircle} className="text-[0.3rem] md:text-[0.4rem]" style={{ color: "rgba(255,255,255,0.2)" }} />
+                <span style={{ color: "var(--text-subtle)" }}>Non vérifié</span>
               </span>
             </div>
 
-            {/* Bouton CONFIRMER pour le HOST */}
             {isHost && (
-              <button
-                onClick={confirmResults}
-                disabled={!allVerifiedCheck}
-                className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect ${
-                  !allVerifiedCheck ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                style={{
-                  backgroundColor: allVerifiedCheck ? "var(--accent-color)" : "var(--text-subtle)",
-                  color: "var(--background-color)",
-                  cursor: allVerifiedCheck ? "pointer" : "not-allowed",
-                }}
-              >
-                {allVerifiedCheck ? "✅ CONFIRMER LES RÉSULTATS" : `⏳ ${verifiedCells}/${totalCells} vérifiés`}
-              </button>
+              <div className="space-y-2">
+                {/* Affichage du statut pour déboguer */}
+                <div className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
+                  {allVerifiedCheck ? (
+                    <span style={{ color: "var(--success-color)" }}>✅ Toutes les cellules sont vérifiées !</span>
+                  ) : (
+                    <span>⚠️ {verifiedCells}/{totalCells} cellules vérifiées</span>
+                  )}
+                </div>
+                
+                <button
+                  onClick={() => {
+                    console.log("🟢 Bouton CONFIRMER cliqué !");
+                    console.log("allVerifiedCheck:", allVerifiedCheck);
+                    console.log("corrections:", corrections);
+                    console.log("totalCells:", totalCells);
+                    
+                    if (allVerifiedCheck) {
+                      confirmResults();
+                    } else {
+                      console.log("❌ Pas toutes les cellules vérifiées !");
+                    }
+                  }}
+                  disabled={!allVerifiedCheck}
+                  className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider transition-all duration-300 ${
+                    allVerifiedCheck ? "glow-effect" : "opacity-50 cursor-not-allowed"
+                  }`}
+                  style={{
+                    backgroundColor: allVerifiedCheck ? "var(--accent-color)" : "var(--text-subtle)",
+                    color: "var(--background-color)",
+                    cursor: allVerifiedCheck ? "pointer" : "not-allowed",
+                  }}
+                >
+                  {allVerifiedCheck ? (
+                    <>
+                      <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                      ✅ CONFIRMER ({verifiedCells}/{totalCells})
+                    </>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faHourglassHalf} className="mr-2" />
+                      ⏳ {verifiedCells}/{totalCells} - Validez toutes les cellules
+                    </>
+                  )}
+                </button>
+              </div>
             )}
 
-            {/* Message pour les non-HOST */}
             {!isHost && (
-              <p className="text-center text-xs md:text-sm" style={{ color: "var(--text-muted)" }}>
-                ⏳ Le HOST valide les réponses... ({verifiedCells}/{totalCells} vérifiées)
+              <p className="text-center text-[0.55rem] md:text-sm" style={{ color: "var(--text-muted)" }}>
+                <FontAwesomeIcon icon={faHourglassHalf} className="mr-2" />
+                Le HOST valide... ({verifiedCells}/{totalCells})
               </p>
             )}
           </>
         )}
 
-        {/* ─── RÉSULTATS FINAUX ─── */}
+        {/* RÉSULTATS FINAUX */}
         {allDone && roomStatus === "finished" && (
           <>
             <div
@@ -2394,9 +2665,11 @@ function MultiResultsScreen({
                         >
                           {p.score ?? "?"}/{p.totalQuestions ?? myTotal}
                         </span>
-                        <span className="text-[0.55rem] md:text-sm font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
-                          ⏱️ {typeof p.avgTimePerQuestion === "number" ? `${p.avgTimePerQuestion.toFixed(1)}s` : "-"}
-                        </span>
+                        {typeof p.avgTimePerQuestion === "number" && (
+                          <span className="text-[0.55rem] md:text-sm font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
+                            ⏱️ {p.avgTimePerQuestion.toFixed(1)}s
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
@@ -2404,7 +2677,6 @@ function MultiResultsScreen({
               </div>
             </div>
 
-            {/* Boutons REJOUER / MENU */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               {isHost && (
                 <button
@@ -2442,6 +2714,14 @@ function MultiResultsScreen({
           </>
         )}
       </div>
+
+      {showExitConfirmation && (
+        <ExitConfirmationModal
+          onConfirm={handleConfirmExit}
+          onCancel={handleCancelExit}
+          isHost={isHost}
+        />
+      )}
     </div>
   );
 }
@@ -2571,7 +2851,6 @@ export default function Home() {
   const previousLiveParticipantsRef = useRef<string[] | null>(null);
   const previousLiveHostRef = useRef<string | null>(null);
 
-  // ✅ Nettoyer la room au chargement si le Host a refresh
   useEffect(() => {
     const savedRoomCode = sessionStorage.getItem("currentRoomCode");
     const savedUserName = sessionStorage.getItem("currentUserName");
@@ -2599,7 +2878,6 @@ export default function Home() {
     sessionStorage.removeItem("isHost");
   }, []);
 
-  // ✅ Détecter quand l'utilisateur ferme l'onglet ou le navigateur
   useEffect(() => {
     const handleBeforeUnload = async () => {
       const savedRoomCode = sessionStorage.getItem("currentRoomCode");
@@ -2625,7 +2903,6 @@ export default function Home() {
     };
   }, []);
 
-  // Restaurer l'état du quiz depuis sessionStorage au chargement
   useEffect(() => {
     const savedState = sessionStorage.getItem("quizState");
     if (savedState) {
@@ -2801,32 +3078,32 @@ export default function Home() {
       }
       setScreen("results");
     } else {
-      // ✅ Mode multijoueur : soumettre automatiquement le score
-      try {
-        const score = quizAnswers.filter(a => a.isCorrect).length;
-        const totalTime = quizAnswers.reduce((acc, a) => acc + a.timeSpent, 0);
-        const avgTime = quizAnswers.length > 0 ? totalTime / quizAnswers.length : 0;
+        try {
+          const score = quizAnswers.filter(a => a.isCorrect).length;
+          const totalTime = quizAnswers.reduce((acc, a) => acc + a.timeSpent, 0);
+          const avgTime = quizAnswers.length > 0 ? totalTime / quizAnswers.length : 0;
 
-        await fetch("/api/room/score", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            code: roomCode,
-            playerName: userName,
-            score,
-            totalQuestions: quizAnswers.length,
-            avgTimePerQuestion: avgTime,
-          }),
-        });
+          await fetch("/api/room/score", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              code: roomCode,
+              playerName: userName,
+              score,
+              totalQuestions: quizAnswers.length,
+              avgTimePerQuestion: avgTime,
+              answers: quizAnswers,
+            }),
+          });
 
-        console.log("✅ Score soumis automatiquement pour", userName);
-      } catch (error) {
-        console.error("❌ Erreur soumission automatique du score:", error);
+          console.log("✅ Score soumis automatiquement pour", userName);
+        } catch (error) {
+          console.error("❌ Erreur soumission automatique du score:", error);
+        }
+
+        setScreen("multiResults");
       }
-
-      setScreen("multiResults");
-    }
-  };
+    };
 
   const handleReplay = () => {
     setSessionId("");
