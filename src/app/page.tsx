@@ -1781,6 +1781,15 @@ function MultiResultsScreen({
   const myTotal = answers.length;
   const playerNames = participants;
 
+  // 🔥 AJOUT : verrou pour éviter l'écrasement des corrections pendant la mise à jour
+  const isUpdatingRef = useRef(false);
+
+  // 🔥 Calcul de la largeur dynamique pour la colonne correction
+  const longestCorrectionName = answers.reduce((longest, answer) => {
+    return answer.playerName.length > longest.length ? answer.playerName : longest;
+  }, "");
+  const correctionColumnWidth = Math.max(longestCorrectionName.length * 9 + 30, 140);
+
   // Refs pour la gestion du popstate
   const isLeavingRef = useRef(false);
   const isPopStateHandlingRef = useRef(false);
@@ -1794,7 +1803,6 @@ function MultiResultsScreen({
 
   // Gestion du bouton Retour - UNIQUEMENT pour reviewing et finished
   useEffect(() => {
-    // Ne pas bloquer si la room est en "waiting" ou "playing"
     if (roomStatus === "waiting" || roomStatus === "playing") return;
 
     if (!hasPushedHistoryRef.current) {
@@ -1857,6 +1865,7 @@ function MultiResultsScreen({
   const handleCellClick = (playerName: string, questionIndex: number) => {
     if (!isHost) return;
     if (roomStatus !== "reviewing") return;
+    if (isUpdatingRef.current) return;
 
     const currentStatus = getCellStatus(playerName, questionIndex);
     let newIsCorrect: boolean | null = null;
@@ -1881,8 +1890,14 @@ function MultiResultsScreen({
       });
     }
 
+    // 🔥 Mise à jour immédiate + verrou
+    isUpdatingRef.current = true;
     setCorrections(newCorrections);
-    saveCorrections(newCorrections);
+    saveCorrections(newCorrections).finally(() => {
+      setTimeout(() => {
+        isUpdatingRef.current = false;
+      }, 500);
+    });
   };
 
   const saveCorrections = async (newCorrections: typeof corrections) => {
@@ -1922,8 +1937,11 @@ function MultiResultsScreen({
         setRoomStatus(data.status);
         setParticipantResults(data.participants || []);
         setParticipantAnswers(data.participantAnswers || []);
-        setCorrections(data.corrections || []);
-        setAllVerified(data.allVerified || false);
+        // 🔥 Ne pas écraser les corrections si on est en train de mettre à jour
+        if (!isUpdatingRef.current) {
+          setCorrections(data.corrections || []);
+          setAllVerified(data.allVerified || false);
+        }
 
         const allDone = data.participants?.every((p: ParticipantResult) => p.done === true) || false;
         if (allDone && data.status === "reviewing") {
@@ -2060,14 +2078,23 @@ function MultiResultsScreen({
     }
 
     try {
-      console.log("✅ Tout est bon, on sauvegarde...");
+      console.log("✅ Tout est bon, on calcule les scores...");
       
       const finalScores = participantResults.map((p) => {
         let score = 0;
+        console.log(`📊 Calcul du score pour ${p.name}:`);
+        
         for (let i = 0; i < answers.length; i++) {
-          const isCorrect = isCellCorrect(p.name, i);
-          if (isCorrect === true) score++;
+          const correction = corrections.find(
+            (c) => c.playerName === p.name && c.questionIndex === i
+          );
+          const isCorrect = correction ? correction.isCorrect : false;
+          console.log(`  Question ${i+1}: ${isCorrect ? '✅' : '❌'}`);
+          if (isCorrect) score++;
         }
+        
+        console.log(`  Score final: ${score}/${answers.length}`);
+        
         return {
           ...p,
           score,
@@ -2076,6 +2103,9 @@ function MultiResultsScreen({
         };
       });
 
+      console.log("📊 Scores finaux calculés:", finalScores);
+
+      // Sauvegarder les scores pour tous les joueurs
       for (const p of finalScores) {
         if (p.name !== userName) {
           await fetch("/api/room/score", {
@@ -2103,13 +2133,22 @@ function MultiResultsScreen({
 
       console.log("✅ Résultats sauvegardés !");
       
-      setParticipantResults(finalScores as ParticipantResult[]);
+      // 🔥 TRI PAR SCORE PUIS TEMPS
+      const sorted = [...finalScores].sort((a, b) => {
+        const scoreA = a.score ?? 0;
+        const scoreB = b.score ?? 0;
+        if (scoreB !== scoreA) {
+          return scoreB - scoreA;
+        }
+        const timeA = a.avgTimePerQuestion ?? Infinity;
+        const timeB = b.avgTimePerQuestion ?? Infinity;
+        return timeA - timeB;
+      });
+
+      setParticipantResults(sorted);
       setAllDone(true);
       setWaitingForAll(false);
 
-      const sorted = [...finalScores].sort(
-        (a, b) => (b.score ?? 0) - (a.score ?? 0)
-      );
       if (sorted.length > 0 && sorted[0]?.name === userName) {
         setShowConfetti(true);
       }
@@ -2167,9 +2206,18 @@ function MultiResultsScreen({
   const verifiedCells = corrections.length;
   const allVerifiedCheck = verifiedCells === totalCells;
 
-  const sortedResults = [...participantResults].sort(
-    (a, b) => (b.score ?? 0) - (a.score ?? 0)
-  );
+  // 🔥 Tri final pour l'affichage du classement
+  const sortedResults = [...participantResults].sort((a, b) => {
+    const scoreA = a.score ?? 0;
+    const scoreB = b.score ?? 0;
+    if (scoreB !== scoreA) {
+      return scoreB - scoreA;
+    }
+    const timeA = a.avgTimePerQuestion ?? Infinity;
+    const timeB = b.avgTimePerQuestion ?? Infinity;
+    return timeA - timeB;
+  });
+
   const winner = allDone && sortedResults.length > 0 ? sortedResults[0] : null;
 
   return (
@@ -2338,26 +2386,27 @@ function MultiResultsScreen({
               }}
             >
               <div style={{ 
-                minWidth: `${Math.max(playerNames.length * 140 + 80, 400)}px`,
-                padding: "0 8px",
+                minWidth: `${Math.max(playerNames.length * 100 + correctionColumnWidth + 50, 400)}px`,
+                padding: "0 4px",
               }}>
                 {/* En-tête */}
                 <div
-                  className="grid px-2 md:px-4 py-2 md:py-3 text-[0.55rem] md:text-sm font-bold uppercase tracking-wider"
+                  className="grid px-2 md:px-4 py-1 md:py-2 text-[0.5rem] md:text-xs font-bold uppercase tracking-wider"
                   style={{ 
                     backgroundColor: "rgba(20, 83, 45, 0.6)",
                     color: "var(--accent-color)",
                     borderBottom: "2px solid var(--card-border-accent)",
-                    gridTemplateColumns: `50px repeat(${playerNames.length}, 1fr) 130px`,
-                    gap: "12px",
+                    gridTemplateColumns: `40px repeat(${playerNames.length}, 1fr) ${correctionColumnWidth}px`,
+                    gap: "6px",
                   }}
                 >
                   <div className="text-center" style={{ 
-                    height: "40px", 
+                    height: "32px", 
                     display: "flex", 
                     alignItems: "center", 
                     justifyContent: "center",
-                    minWidth: "50px",
+                    minWidth: "40px",
+                    fontSize: "clamp(0.5rem, 1vw, 0.75rem)",
                   }}>#</div>
                   
                   {playerNames.map((name) => (
@@ -2367,27 +2416,30 @@ function MultiResultsScreen({
                       style={{ 
                         color: name === hostName ? "var(--accent-color)" : "var(--text-muted)",
                         fontWeight: name === hostName ? "700" : "500",
-                        height: "40px",
-                        minWidth: "100px",
+                        height: "32px",
+                        minWidth: "60px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        paddingRight: "12px",
+                        paddingRight: "6px",
+                        fontSize: "clamp(0.4rem, 0.8vw, 0.65rem)",
                       }}
                       title={name}
                     >
-                      {name === hostName && <FontAwesomeIcon icon={faCrown} className="mr-1 text-[0.5rem] md:text-xs" style={{ color: "var(--accent-color)" }} />}
-                      <span className="text-[0.55rem] md:text-sm">{name}</span>
+                      {name === hostName && <FontAwesomeIcon icon={faCrown} className="mr-0.5 text-[0.35rem] md:text-xs" style={{ color: "var(--accent-color)" }} />}
+                      <span className="text-[0.4rem] md:text-xs">{name}</span>
                     </div>
                   ))}
                   
                   <div className="text-center font-bold" style={{ 
                     color: "var(--accent-color)", 
-                    height: "40px", 
-                    minWidth: "130px",
+                    height: "32px", 
+                    minWidth: `${correctionColumnWidth}px`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    fontSize: "clamp(0.5rem, 0.9vw, 0.7rem)",
+                    padding: "0 4px",
                   }}>✓ CORRECTION</div>
                 </div>
 
@@ -2397,24 +2449,24 @@ function MultiResultsScreen({
                   return (
                     <div
                       key={questionIndex}
-                      className="grid px-2 md:px-4 py-1 items-center transition-all duration-200 hover:bg-white/5"
+                      className="grid px-2 md:px-4 py-0.5 items-center transition-all duration-200 hover:bg-white/5"
                       style={{
                         borderBottom: questionIndex < answers.length - 1 ? "1px solid var(--card-border)" : "none",
                         backgroundColor: questionIndex % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
-                        gridTemplateColumns: `50px repeat(${playerNames.length}, 1fr) 130px`,
-                        gap: "12px",
-                        minHeight: "50px",
+                        gridTemplateColumns: `40px repeat(${playerNames.length}, 1fr) ${correctionColumnWidth}px`,
+                        gap: "6px",
+                        minHeight: "38px",
                       }}
                     >
                       {/* Colonne # */}
                       <div className="text-center font-bold" style={{ 
                         color: "var(--text-muted)", 
-                        height: "40px", 
-                        minWidth: "50px",
+                        height: "32px", 
+                        minWidth: "40px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: "clamp(0.6rem, 1vw, 0.875rem)",
+                        fontSize: "clamp(0.5rem, 0.9vw, 0.75rem)",
                       }}>
                         {questionIndex + 1}
                       </div>
@@ -2426,13 +2478,23 @@ function MultiResultsScreen({
                         let playerAnswer = "";
                         if (playerName === hostName) {
                           const hostAnswer = answers[questionIndex];
-                          playerAnswer = hostAnswer.userAnswer;
+                          playerAnswer = hostAnswer ? hostAnswer.userAnswer : "?";
                         } else {
                           const playerAnswersData = participantAnswers.find(
-                            (p) => p.playerName === playerName
+                            (p) => p.playerName.trim().toLowerCase() === playerName.trim().toLowerCase()
                           );
-                          if (playerAnswersData && playerAnswersData.answers[questionIndex]) {
-                            playerAnswer = playerAnswersData.answers[questionIndex];
+                          if (playerAnswersData && playerAnswersData.answers) {
+                            const answerArray = playerAnswersData.answers;
+                            let index = questionIndex;
+                            // Détection et correction du décalage
+                            if (answerArray.length === answers.length + 1) {
+                              index = questionIndex + 1;
+                            }
+                            if (index < answerArray.length) {
+                              playerAnswer = answerArray[index] || "?";
+                            } else {
+                              playerAnswer = "?";
+                            }
                           } else {
                             playerAnswer = "?";
                           }
@@ -2452,17 +2514,17 @@ function MultiResultsScreen({
                           bgColor = "rgba(34, 197, 94, 0.12)";
                           textColor = "var(--success-color)";
                           borderColor = "var(--success-color)";
-                          icon = <FontAwesomeIcon icon={faCheck} className="text-[0.4rem] md:text-sm mr-1" style={{ color: "var(--success-color)" }} />;
+                          icon = <FontAwesomeIcon icon={faCheck} className="text-[0.3rem] md:text-xs mr-0.5" style={{ color: "var(--success-color)" }} />;
                         } else if (isIncorrect) {
                           bgColor = "rgba(239, 68, 68, 0.12)";
                           textColor = "var(--error-color)";
                           borderColor = "var(--error-color)";
-                          icon = <FontAwesomeIcon icon={faXmark} className="text-[0.4rem] md:text-sm mr-1" style={{ color: "var(--error-color)" }} />;
+                          icon = <FontAwesomeIcon icon={faXmark} className="text-[0.3rem] md:text-xs mr-0.5" style={{ color: "var(--error-color)" }} />;
                         } else if (isNeutral) {
                           bgColor = "rgba(255,255,255,0.02)";
                           textColor = "rgba(255,255,255,0.25)";
                           borderColor = "rgba(255,255,255,0.05)";
-                          icon = <FontAwesomeIcon icon={faCircle} className="text-[0.3rem] md:text-xs mr-1" style={{ color: "rgba(255,255,255,0.15)" }} />;
+                          icon = <FontAwesomeIcon icon={faCircle} className="text-[0.25rem] md:text-[0.4rem] mr-0.5" style={{ color: "rgba(255,255,255,0.15)" }} />;
                         }
 
                         const isClickable = isHost && roomStatus === "reviewing";
@@ -2476,15 +2538,15 @@ function MultiResultsScreen({
                               color: textColor,
                               border: `${borderWidth} solid ${borderColor}`,
                               cursor: isClickable ? "pointer" : "default",
-                              height: "40px",
-                              minWidth: "80px",
+                              height: "32px",
+                              minWidth: "50px",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              gap: "0.25rem",
-                              fontSize: "clamp(0.5rem, 1vw, 0.875rem)",
-                              padding: "0.25rem 0.75rem",
-                              marginRight: "4px",
+                              gap: "0.15rem",
+                              fontSize: "clamp(0.4rem, 0.8vw, 0.65rem)",
+                              padding: "0.1rem 0.3rem",
+                              marginRight: "2px",
                             }}
                             onClick={() => {
                               if (isClickable) {
@@ -2495,25 +2557,25 @@ function MultiResultsScreen({
                           >
                             {icon}
                             {playerAnswer === "SKIP" || playerAnswer === "" ? (
-                              <span className="font-bold text-[0.45rem] md:text-sm uppercase tracking-wider" style={{ opacity: 0.6 }}>
+                              <span className="font-bold text-[0.35rem] md:text-[0.65rem] uppercase tracking-wider" style={{ opacity: 0.6 }}>
                                 SKIP
                               </span>
                             ) : (
-                              <span className="truncate text-[0.45rem] md:text-sm font-medium">{playerAnswer || "?"}</span>
+                              <span className="truncate text-[0.4rem] md:text-sm font-medium">{playerAnswer || "?"}</span>
                             )}
                           </div>
                         );
                       })}
 
-                      {/* ✅ Colonne de correction */}
+                      {/* ✅ Colonne de correction - MÊME TAILLE DE POLICE */}
                       <div className="text-center flex items-center justify-center gap-1" style={{ 
                         color: "var(--accent-color)",
                         fontWeight: "600",
-                        height: "40px",
-                        minWidth: "130px",
-                        padding: "0.25rem 0.5rem",
+                        height: "32px",
+                        minWidth: `${correctionColumnWidth}px`,
+                        padding: "0.1rem 0.4rem",
                       }}>
-                        <FontAwesomeIcon icon={faCheck} className="text-[0.4rem] md:text-sm" style={{ color: "var(--accent-color)" }} />
+                        <FontAwesomeIcon icon={faCheck} className="text-[0.3rem] md:text-sm" style={{ color: "var(--accent-color)" }} />
                         <span className="text-[0.4rem] md:text-sm font-semibold whitespace-nowrap overflow-visible">
                           {correctAnswer}
                         </span>
@@ -2542,7 +2604,6 @@ function MultiResultsScreen({
 
             {isHost && (
               <div className="space-y-2">
-                {/* Affichage du statut pour déboguer */}
                 <div className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
                   {allVerifiedCheck ? (
                     <span style={{ color: "var(--success-color)" }}>✅ Toutes les cellules sont vérifiées !</span>
