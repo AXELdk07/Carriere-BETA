@@ -23,8 +23,9 @@ export async function POST(request: Request) {
   try {
     await connectDB();
 
-    const { code, playerName, score, totalQuestions, avgTimePerQuestion, answers } = await request.json();
+    const { code, playerName, score, totalQuestions, avgTimePerQuestion, answers, forceUpdate } = await request.json();
 
+    // Validation des données
     if (!code || !playerName || score === undefined || score === null || !totalQuestions) {
       return Response.json(
         { error: "Données manquantes : code, playerName, score et totalQuestions sont requis" },
@@ -71,20 +72,30 @@ export async function POST(request: Request) {
       );
     }
 
-    if (participant.done) {
+    // 🔥 Si le participant a déjà soumis son score et que forceUpdate n'est pas true → bloquer
+    if (participant.done && !forceUpdate) {
       return Response.json(
         { error: "Vous avez déjà soumis votre score" },
         { status: 409 }
       );
     }
 
-    participant.score = score;
-    participant.totalQuestions = totalQuestions;
-    participant.avgTimePerQuestion = avgTimePerQuestion;
-    participant.done = true;
+    // 🔥 Si forceUpdate est true, on écrase le score existant
+    if (forceUpdate) {
+      participant.score = score;
+      participant.totalQuestions = totalQuestions;
+      participant.avgTimePerQuestion = avgTimePerQuestion;
+      participant.done = true;
+    } else {
+      // ✅ Soumission normale (première fois)
+      participant.score = score;
+      participant.totalQuestions = totalQuestions;
+      participant.avgTimePerQuestion = avgTimePerQuestion;
+      participant.done = true;
+    }
 
-    // ✅ Sauvegarder les réponses du joueur
-    if (answers && Array.isArray(answers)) {
+    // ✅ Sauvegarder les réponses du joueur (si fournies et non vides)
+    if (answers && Array.isArray(answers) && answers.length > 0) {
       // Chercher si le joueur existe déjà dans participantAnswers
       const existingIndex = room.participantAnswers?.findIndex(
         (p: any) => p.playerName === playerName.trim()
@@ -107,8 +118,10 @@ export async function POST(request: Request) {
       }
     }
 
+    // Vérifier si tous les participants ont fini
     const allDone = room.participants.every((p: Participant) => p.done);
 
+    // Si tous ont fini, passer en mode "reviewing"
     if (allDone) {
       room.status = "reviewing";
     }

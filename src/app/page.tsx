@@ -31,6 +31,17 @@ import {
   faUser,
   faUsers,
   faXmark,
+  faCheckCircle,
+  faDoorOpen,
+  faTriangleExclamation,
+  faHandPointer,
+  faFire,
+  faBullseye,
+  faComment,
+  faBroom,
+  faMessage,
+  faPen,
+  faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Types
@@ -82,14 +93,23 @@ function ExitConfirmationModal({
     >
       <div className="bg-[var(--card-bg)] border border-[var(--card-border-accent)] rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl">
         <div className="text-center">
-          <div className="text-5xl mb-4">🚪</div>
+          <div className="text-5xl mb-4">
+            <FontAwesomeIcon icon={faDoorOpen} />
+          </div>
           <h2 className="text-xl md:text-2xl font-bold text-[var(--accent-color)] mb-3">
             Quitter la partie ?
           </h2>
           <p className="text-[var(--text-muted)] text-sm md:text-base mb-6">
             Voulez-vous vraiment quitter cette partie ?<br />
             <span className="text-xs" style={{ color: "var(--text-subtle)" }}>
-              {isHost ? "⚠️ En tant qu'hôte, la partie sera interrompue pour tout le monde." : "Vous ne pourrez pas revenir dans cette partie."}
+              {isHost ? (
+                <>
+                  <FontAwesomeIcon icon={faTriangleExclamation} className="mr-1" />
+                  En tant qu'hôte, la partie sera interrompue pour tout le monde.
+                </>
+              ) : (
+                "Vous ne pourrez pas revenir dans cette partie."
+              )}
             </span>
           </p>
           <div className="flex gap-3">
@@ -670,7 +690,7 @@ function FriendLobbyScreen({
                       {name}{name === userName ? " (vous)" : ""}
                     </span>
                   </div>
-                  {name === hostName && <span className="badge badge--host text-[0.5rem] md:text-xs ml-auto">👑 Host</span>}
+                  {name === hostName && <span className="badge badge--host text-[0.5rem] md:text-xs ml-auto"><FontAwesomeIcon icon={faCrown} /> Host</span>}
                 </div>
               ))}
             </div>
@@ -1398,7 +1418,7 @@ function ResultsScreen({
             className="text-2xl md:text-4xl font-extrabold mb-1 md:mb-2"
             style={{ color: "var(--accent-color)" }}
           >
-            📊 RÉSULTATS
+            <FontAwesomeIcon icon={faChartColumn} className="mr-2" /> RÉSULTATS
           </h1>
           <p className="text-xs md:text-base" style={{ color: "rgba(255,255,255,0.6)" }}>
             Vérifiez vos réponses et cochez les bonnes, {userName} !
@@ -1420,7 +1440,9 @@ function ResultsScreen({
             }}
           >
             <div className="col-span-1 text-center">#</div>
-            <div className="col-span-2 text-center">✓</div>
+            <div className="col-span-2 text-center">
+              <FontAwesomeIcon icon={faCheck} />
+            </div>
             <div className="col-span-4 md:col-span-4">Votre Réponse</div>
             <div className="col-span-5 md:col-span-5">Correction</div>
           </div>
@@ -1514,12 +1536,12 @@ function ResultsScreen({
             </p>
             <p className="text-base md:text-lg mt-2 md:mt-3" style={{ color: "rgba(255,255,255,0.6)" }}>
               {finalScore === 10
-                ? "🏆 Parfait ! Vous êtes un expert !"
+                ? <><FontAwesomeIcon icon={faTrophy} /> Parfait ! Vous êtes un expert !</>
                 : finalScore >= 7
-                ? "🎉 Excellent ! Bravo !"
+                ? <><FontAwesomeIcon icon={faFaceSmile} /> Excellent ! Bravo !</>
                 : finalScore >= 4
-                ? "👍 Pas mal ! Continuez !"
-                : "💪 Vous pouvez faire mieux !"}
+                ? <><FontAwesomeIcon icon={faThumbsUp} /> Pas mal ! Continuez !</>
+                : <><FontAwesomeIcon icon={faDumbbell} /> Vous pouvez faire mieux !</>}
             </p>
           </div>
         )}
@@ -1536,7 +1558,7 @@ function ResultsScreen({
                   cursor: "pointer",
                 }}
               >
-                ✅ CONFIRMER LE SCORE
+                <FontAwesomeIcon icon={faCheck} /> CONFIRMER LE SCORE
               </button>
               <button
                 onClick={onHome}
@@ -1548,7 +1570,7 @@ function ResultsScreen({
                   cursor: "pointer",
                 }}
               >
-                🏠 MENU
+                <FontAwesomeIcon icon={faHouse} /> MENU
               </button>
             </>
           ) : (
@@ -1562,7 +1584,7 @@ function ResultsScreen({
                   cursor: "pointer",
                 }}
               >
-                🔄 REJOUER
+                <FontAwesomeIcon icon={faRotateRight} /> REJOUER
               </button>
               <button
                 onClick={onHome}
@@ -1574,7 +1596,7 @@ function ResultsScreen({
                   cursor: "pointer",
                 }}
               >
-                🏠 MENU PRINCIPAL
+                <FontAwesomeIcon icon={faHouse} /> MENU PRINCIPAL
               </button>
             </>
           )}
@@ -1648,7 +1670,7 @@ function ResultsScreen({
         {finalScore !== null && (
           <div className="mt-4 md:mt-8 fade-in">
             <h2 className="text-base md:text-xl font-bold mb-3 md:mb-4 text-center" style={{ color: "var(--accent-color)" }}>
-              🏆 CLASSEMENT DE LA PARTIE
+              <FontAwesomeIcon icon={faTrophy} /> CLASSEMENT DE LA PARTIE
             </h2>
             <div
               className="rounded-2xl overflow-hidden"
@@ -1692,7 +1714,7 @@ function ResultsScreen({
                           color: index === 0 ? "var(--accent-color)" : "rgba(255,255,255,0.6)",
                         }}
                       >
-                        {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`}
+                        {index === 0 ? <FontAwesomeIcon icon={faMedal} className="rank-gold" /> : index === 1 ? <FontAwesomeIcon icon={faMedal} className="rank-silver" /> : index === 2 ? <FontAwesomeIcon icon={faMedal} className="rank-bronze" /> : `#${index + 1}`}
                       </div>
                       <div
                         className="col-span-7 md:col-span-7 font-medium truncate text-[0.65rem] md:text-base"
@@ -1701,7 +1723,7 @@ function ResultsScreen({
                         }}
                       >
                         {entry.userName}
-                        {isCurrentUser && " ⭐"}
+                        {isCurrentUser && <FontAwesomeIcon icon={faStar} className="ml-1" />}
                       </div>
                       <div className="col-span-4 text-center font-bold text-[0.65rem] md:text-base" style={{ color: "var(--accent-color)" }}>
                         {entry.score}/{entry.totalQuestions}
@@ -1781,27 +1803,22 @@ function MultiResultsScreen({
   const myTotal = answers.length;
   const playerNames = participants;
 
-  // 🔥 AJOUT : verrou pour éviter l'écrasement des corrections pendant la mise à jour
   const isUpdatingRef = useRef(false);
 
-  // 🔥 Calcul de la largeur dynamique pour la colonne correction
   const longestCorrectionName = answers.reduce((longest, answer) => {
     return answer.playerName.length > longest.length ? answer.playerName : longest;
   }, "");
   const correctionColumnWidth = Math.max(longestCorrectionName.length * 9 + 30, 140);
 
-  // Refs pour la gestion du popstate
   const isLeavingRef = useRef(false);
   const isPopStateHandlingRef = useRef(false);
   const hasPushedHistoryRef = useRef(false);
   const showExitConfirmationRef = useRef(showExitConfirmation);
 
-  // Met à jour le ref
   useEffect(() => {
     showExitConfirmationRef.current = showExitConfirmation;
   }, [showExitConfirmation]);
 
-  // Gestion du bouton Retour - UNIQUEMENT pour reviewing et finished
   useEffect(() => {
     if (roomStatus === "waiting" || roomStatus === "playing") return;
 
@@ -1835,7 +1852,6 @@ function MultiResultsScreen({
     };
   }, [roomStatus]);
 
-  // Nettoyage de l'historique quand la partie est terminée
   useEffect(() => {
     if (roomStatus === "finished" && hasPushedHistoryRef.current) {
       window.history.replaceState(null, "", window.location.href);
@@ -1890,7 +1906,6 @@ function MultiResultsScreen({
       });
     }
 
-    // 🔥 Mise à jour immédiate + verrou
     isUpdatingRef.current = true;
     setCorrections(newCorrections);
     saveCorrections(newCorrections).finally(() => {
@@ -1919,7 +1934,6 @@ function MultiResultsScreen({
     }
   };
 
-  // Force la mise à jour quand corrections change
   useEffect(() => {
     const total = playerNames.length * answers.length;
     const verified = corrections.length;
@@ -1937,7 +1951,6 @@ function MultiResultsScreen({
         setRoomStatus(data.status);
         setParticipantResults(data.participants || []);
         setParticipantAnswers(data.participantAnswers || []);
-        // 🔥 Ne pas écraser les corrections si on est en train de mettre à jour
         if (!isUpdatingRef.current) {
           setCorrections(data.corrections || []);
           setAllVerified(data.allVerified || false);
@@ -2080,13 +2093,13 @@ function MultiResultsScreen({
     try {
       console.log("✅ Tout est bon, on calcule les scores...");
       
-      const finalScores = participantResults.map((p) => {
+      const finalScores = playerNames.map((playerName) => {
         let score = 0;
-        console.log(`📊 Calcul du score pour ${p.name}:`);
+        console.log(`📊 Calcul du score pour ${playerName}:`);
         
         for (let i = 0; i < answers.length; i++) {
           const correction = corrections.find(
-            (c) => c.playerName === p.name && c.questionIndex === i
+            (c) => c.playerName === playerName && c.questionIndex === i
           );
           const isCorrect = correction ? correction.isCorrect : false;
           console.log(`  Question ${i+1}: ${isCorrect ? '✅' : '❌'}`);
@@ -2095,30 +2108,38 @@ function MultiResultsScreen({
         
         console.log(`  Score final: ${score}/${answers.length}`);
         
+        const existingPlayer = participantResults.find(p => p.name === playerName);
+        
         return {
-          ...p,
-          score,
+          name: playerName,
+          score: score,
           totalQuestions: answers.length,
+          avgTimePerQuestion: existingPlayer?.avgTimePerQuestion ?? null,
           done: true,
         };
       });
 
       console.log("📊 Scores finaux calculés:", finalScores);
 
-      // Sauvegarder les scores pour tous les joueurs
       for (const p of finalScores) {
-        if (p.name !== userName) {
-          await fetch("/api/room/score", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              code: roomCode,
-              playerName: p.name,
-              score: p.score,
-              totalQuestions: answers.length,
-              avgTimePerQuestion: p.avgTimePerQuestion || 0,
-            }),
-          });
+        const response = await fetch("/api/room/score", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: roomCode,
+            playerName: p.name,
+            score: p.score,
+            totalQuestions: answers.length,
+            avgTimePerQuestion: p.avgTimePerQuestion || 0,
+            answers: p.name === userName ? answers : [],
+            forceUpdate: true,
+          }),
+        });
+        
+        if (!response.ok) {
+          console.error(`❌ Erreur sauvegarde score pour ${p.name}:`, await response.text());
+        } else {
+          console.log(`✅ Score sauvegardé pour ${p.name}: ${p.score}/${answers.length}`);
         }
       }
 
@@ -2133,7 +2154,6 @@ function MultiResultsScreen({
 
       console.log("✅ Résultats sauvegardés !");
       
-      // 🔥 TRI PAR SCORE PUIS TEMPS
       const sorted = [...finalScores].sort((a, b) => {
         const scoreA = a.score ?? 0;
         const scoreB = b.score ?? 0;
@@ -2148,6 +2168,8 @@ function MultiResultsScreen({
       setParticipantResults(sorted);
       setAllDone(true);
       setWaitingForAll(false);
+
+      await forceRefresh();
 
       if (sorted.length > 0 && sorted[0]?.name === userName) {
         setShowConfetti(true);
@@ -2206,7 +2228,6 @@ function MultiResultsScreen({
   const verifiedCells = corrections.length;
   const allVerifiedCheck = verifiedCells === totalCells;
 
-  // 🔥 Tri final pour l'affichage du classement
   const sortedResults = [...participantResults].sort((a, b) => {
     const scoreA = a.score ?? 0;
     const scoreB = b.score ?? 0;
@@ -2219,6 +2240,33 @@ function MultiResultsScreen({
   });
 
   const winner = allDone && sortedResults.length > 0 ? sortedResults[0] : null;
+
+  const forceRefresh = async () => {
+    try {
+      console.log("🔄 Rafraîchissement des données...");
+      const res = await fetch(`/api/room/status?code=${roomCode}`);
+      const data = await res.json();
+      if (res.ok) {
+        setParticipantAnswers(data.participantAnswers || []);
+        setCorrections(data.corrections || []);
+        setAllVerified(data.allVerified || false);
+        setParticipantResults(data.participants || []);
+        setRoomStatus(data.status);
+        
+        const allDone = data.participants?.every((p: ParticipantResult) => p.done === true) || false;
+        if (allDone && data.status === "reviewing") {
+          setAllDone(true);
+          setWaitingForAll(false);
+        }
+        
+        console.log("🔄 Données rafraîchies:", data);
+      } else {
+        console.error("❌ Erreur refresh:", data.error);
+      }
+    } catch (error) {
+      console.error("❌ Erreur refresh:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen p-3 md:p-8">
@@ -2254,22 +2302,37 @@ function MultiResultsScreen({
       <div className="max-w-4xl mx-auto fade-in space-y-4 md:space-y-6">
         <div className="text-center">
           <h1 className="text-2xl md:text-4xl font-extrabold mb-1" style={{ color: "var(--accent-color)" }}>
-            📊 RÉSULTATS
+            <FontAwesomeIcon icon={faChartColumn} className="mr-2" /> RÉSULTATS
           </h1>
           <p className="text-xs md:text-base" style={{ color: "rgba(255,255,255,0.5)" }}>
             Mode multijoueur — Room {roomCode}
-            {isHost && roomStatus === "reviewing" && " 🔑 Vous êtes le HOST - Validez les réponses"}
+            {isHost && roomStatus === "reviewing" && <><FontAwesomeIcon icon={faKey} className="ml-2" /> Vous êtes le HOST - Validez les réponses</>}
           </p>
+          {isHost && (
+            <button
+              onClick={forceRefresh}
+              className="mt-2 px-4 py-1 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "var(--text-muted)",
+                cursor: "pointer",
+              }}
+            >
+              <FontAwesomeIcon icon={faRotateRight} className="mr-1" /> Rafraîchir les données
+            </button>
+          )}
         </div>
 
-        {/* ÉCRAN D'ATTENTE */}
         {!allDone && (
           <>
             <div
               className="rounded-2xl p-4 md:p-8 text-center space-y-3 md:space-y-4"
               style={{ backgroundColor: "var(--card-bg)", border: "2px solid var(--accent-color)" }}
             >
-              <div className="text-3xl md:text-4xl animate-bounce">⏳</div>
+              <div className="text-3xl md:text-4xl animate-bounce">
+                <FontAwesomeIcon icon={faHourglassHalf} />
+              </div>
               {myFinalScore !== null && (
                 <p className="text-lg md:text-xl font-bold" style={{ color: "var(--accent-color)" }}>
                   Votre score : {myFinalScore}/{myTotal}
@@ -2290,7 +2353,9 @@ function MultiResultsScreen({
                     }}
                   >
                     <div className="flex items-center gap-1 md:gap-2 flex-1 min-w-[100px]">
-                      <span className="text-sm md:text-base">{p.name === hostName ? "👑" : "👤"}</span>
+                      <span className="text-sm md:text-base">
+                        <FontAwesomeIcon icon={p.name === hostName ? faCrown : faUser} />
+                      </span>
                       <span
                         className="font-medium text-xs md:text-sm truncate"
                         style={{ color: p.name === userName ? "var(--accent-color)" : "var(--text-color)" }}
@@ -2303,7 +2368,7 @@ function MultiResultsScreen({
                       className="text-[0.5rem] md:text-sm font-semibold ml-auto"
                       style={{ color: p.done ? "var(--success-color)" : "rgba(255,255,255,0.35)" }}
                     >
-                      {p.done ? "✅" : "⏳"}
+                      {p.done ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faHourglassHalf} />}
                       <span className="hidden sm:inline ml-1">{p.done ? "TERMINÉ" : "En cours..."}</span>
                     </span>
                   </div>
@@ -2335,158 +2400,179 @@ function MultiResultsScreen({
                 }}
               >
                 <p className="text-sm md:text-base font-semibold" style={{ color: "var(--success-color)" }}>
-                  ✅ Score soumis : {myFinalScore}/{myTotal}
+                  <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                  Score soumis : {myFinalScore}/{myTotal}
                 </p>
               </div>
             )}
           </>
         )}
 
-        {/* ÉCRAN DE CORRECTION (HOST) */}
         {allDone && roomStatus === "reviewing" && (
           <>
             <div className="text-center">
               <p className="text-xs md:text-sm" style={{ color: "var(--text-muted)" }}>
                 {isHost ? (
-                  "👆 Cliquez sur une réponse pour la valider"
+                  <><FontAwesomeIcon icon={faHandPointer} className="mr-1" /> Cliquez sur une réponse pour la valider</>
                 ) : (
-                  "⏳ Le HOST valide les réponses..."
+                  <><FontAwesomeIcon icon={faHourglassHalf} className="mr-1" /> Le HOST valide les réponses...</>
                 )}
               </p>
               {isHost && (
                 <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 mt-2 text-[0.6rem] md:text-sm">
                   <span className="flex items-center gap-1">
                     <span className="w-3 h-3 rounded" style={{ backgroundColor: "rgba(34, 197, 94, 0.3)", border: "1px solid var(--success-color)" }}></span>
-                    <span style={{ color: "var(--success-color)" }}>Correct</span>
+                    <span style={{ color: "var(--success-color)" }}>
+                      <FontAwesomeIcon icon={faCheck} className="mr-1" /> Correct
+                    </span>
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="w-3 h-3 rounded" style={{ backgroundColor: "rgba(239, 68, 68, 0.3)", border: "1px solid var(--error-color)" }}></span>
-                    <span style={{ color: "var(--error-color)" }}>Faux</span>
+                    <span style={{ color: "var(--error-color)" }}>
+                      <FontAwesomeIcon icon={faXmark} className="mr-1" /> Faux
+                    </span>
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="w-3 h-3 rounded" style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}></span>
                     <span style={{ color: "var(--text-subtle)" }}>Non vérifié</span>
                   </span>
                   <span className="text-xs font-bold" style={{ color: "var(--accent-color)" }}>
-                    {verifiedCells}/{totalCells} ✅
+                    {verifiedCells}/{totalCells} <FontAwesomeIcon icon={faCheck} />
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Tableau responsive - ESPACEMENT DYNAMIQUE */}
             <div
-              className="rounded-2xl overflow-hidden shadow-lg"
+              className="rounded-2xl overflow-hidden shadow-lg border border-[var(--card-border)]"
               style={{ 
-                backgroundColor: "var(--card-bg)", 
-                border: "1px solid var(--card-border)",
-                overflowX: "auto",
-                WebkitOverflowScrolling: "touch",
-                touchAction: "pan-x",
+                backgroundColor: "var(--card-bg)",
               }}
             >
-              <div style={{ 
-                minWidth: `${Math.max(playerNames.length * 100 + correctionColumnWidth + 50, 400)}px`,
-                padding: "0 4px",
-              }}>
-                {/* En-tête */}
-                <div
-                  className="grid px-2 md:px-4 py-1 md:py-2 text-[0.5rem] md:text-xs font-bold uppercase tracking-wider"
+              <div 
+                className="overflow-x-auto scroll-smooth"
+                style={{
+                  WebkitOverflowScrolling: "touch",
+                  scrollBehavior: "smooth",
+                }}
+              >
+                <div 
                   style={{ 
-                    backgroundColor: "rgba(20, 83, 45, 0.6)",
-                    color: "var(--accent-color)",
-                    borderBottom: "2px solid var(--card-border-accent)",
-                    gridTemplateColumns: `40px repeat(${playerNames.length}, 1fr) ${correctionColumnWidth}px`,
-                    gap: "6px",
+                    minWidth: `${Math.max(playerNames.length * 110 + correctionColumnWidth + 60, 420)}px`,
+                    padding: "0 4px",
                   }}
                 >
-                  <div className="text-center" style={{ 
-                    height: "32px", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    minWidth: "40px",
-                    fontSize: "clamp(0.5rem, 1vw, 0.75rem)",
-                  }}>#</div>
-                  
-                  {playerNames.map((name) => (
+                  <div
+                    className="grid px-2 md:px-4 py-1.5 md:py-2 text-[0.5rem] md:text-xs font-bold uppercase tracking-wider"
+                    style={{ 
+                      backgroundColor: "rgba(20, 83, 45, 0.7)",
+                      color: "var(--accent-color)",
+                      borderBottom: "2px solid var(--card-border-accent)",
+                      gridTemplateColumns: `36px repeat(${playerNames.length}, 1fr) ${Math.max(correctionColumnWidth, 120)}px`,
+                      gap: "4px",
+                      position: "sticky",
+                      top: 0,
+                      zIndex: 10,
+                    }}
+                  >
                     <div 
-                      key={name} 
-                      className="text-center truncate font-semibold"
+                      className="text-center font-bold"
                       style={{ 
-                        color: name === hostName ? "var(--accent-color)" : "var(--text-muted)",
-                        fontWeight: name === hostName ? "700" : "500",
-                        height: "32px",
-                        minWidth: "60px",
+                        height: "30px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        paddingRight: "6px",
-                        fontSize: "clamp(0.4rem, 0.8vw, 0.65rem)",
+                        fontSize: "clamp(0.5rem, 1vw, 0.7rem)",
+                        minWidth: "32px",
                       }}
-                      title={name}
                     >
-                      {name === hostName && <FontAwesomeIcon icon={faCrown} className="mr-0.5 text-[0.35rem] md:text-xs" style={{ color: "var(--accent-color)" }} />}
-                      <span className="text-[0.4rem] md:text-xs">{name}</span>
+                      #
                     </div>
-                  ))}
-                  
-                  <div className="text-center font-bold" style={{ 
-                    color: "var(--accent-color)", 
-                    height: "32px", 
-                    minWidth: `${correctionColumnWidth}px`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "clamp(0.5rem, 0.9vw, 0.7rem)",
-                    padding: "0 4px",
-                  }}>✓ CORRECTION</div>
-                </div>
-
-                {/* Lignes */}
-                {answers.map((answer, questionIndex) => {
-                  const correctAnswer = answer.playerName;
-                  return (
-                    <div
-                      key={questionIndex}
-                      className="grid px-2 md:px-4 py-0.5 items-center transition-all duration-200 hover:bg-white/5"
-                      style={{
-                        borderBottom: questionIndex < answers.length - 1 ? "1px solid var(--card-border)" : "none",
-                        backgroundColor: questionIndex % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
-                        gridTemplateColumns: `40px repeat(${playerNames.length}, 1fr) ${correctionColumnWidth}px`,
-                        gap: "6px",
-                        minHeight: "38px",
-                      }}
-                    >
-                      {/* Colonne # */}
-                      <div className="text-center font-bold" style={{ 
-                        color: "var(--text-muted)", 
-                        height: "32px", 
-                        minWidth: "40px",
+                    
+                    {playerNames.map((name) => (
+                      <div 
+                        key={name} 
+                        className="text-center truncate font-semibold"
+                        style={{ 
+                          color: name === hostName ? "var(--accent-color)" : "var(--text-muted)",
+                          fontWeight: name === hostName ? "700" : "500",
+                          height: "30px",
+                          minWidth: "70px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "3px",
+                          fontSize: "clamp(0.4rem, 0.8vw, 0.65rem)",
+                          padding: "0 4px",
+                        }}
+                        title={name}
+                      >
+                        {name === hostName ? (
+                          <FontAwesomeIcon icon={faCrown} className="text-[0.5rem] md:text-xs" style={{ color: "var(--accent-color)" }} />
+                        ) : (
+                          <FontAwesomeIcon icon={faUser} className="text-[0.4rem] md:text-[0.6rem]" style={{ color: "var(--text-muted)" }} />
+                        )}
+                        <span className="truncate">{name}</span>
+                      </div>
+                    ))}
+                    
+                    <div 
+                      className="text-center font-bold"
+                      style={{ 
+                        color: "var(--accent-color)",
+                        height: "30px",
+                        minWidth: `${Math.max(correctionColumnWidth, 120)}px`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: "clamp(0.5rem, 0.9vw, 0.75rem)",
-                      }}>
-                        {questionIndex + 1}
-                      </div>
+                        gap: "4px",
+                        fontSize: "clamp(0.45rem, 0.8vw, 0.65rem)",
+                        padding: "0 4px",
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCheckCircle} className="text-[0.5rem] md:text-xs" style={{ color: "var(--success-color)" }} />
+                      <span>Correction</span>
+                    </div>
+                  </div>
 
-                      {/* Colonnes des joueurs */}
-                      {playerNames.map((playerName) => {
-                        const status = getCellStatus(playerName, questionIndex);
-                        
-                        let playerAnswer = "";
-                        if (playerName === hostName) {
-                          const hostAnswer = answers[questionIndex];
-                          playerAnswer = hostAnswer ? hostAnswer.userAnswer : "?";
-                        } else {
+                  {answers.map((answer, questionIndex) => {
+                    const correctAnswer = answer.playerName;
+                    return (
+                      <div
+                        key={questionIndex}
+                        className="grid px-2 md:px-4 py-0.5 items-center transition-all duration-150 hover:bg-white/5"
+                        style={{
+                          borderBottom: questionIndex < answers.length - 1 ? "1px solid var(--card-border)" : "none",
+                          backgroundColor: questionIndex % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+                          gridTemplateColumns: `36px repeat(${playerNames.length}, 1fr) ${Math.max(correctionColumnWidth, 120)}px`,
+                          gap: "4px",
+                          minHeight: "34px",
+                        }}
+                      >
+                        <div 
+                          className="text-center font-bold"
+                          style={{ 
+                            color: "var(--text-muted)",
+                            height: "30px",
+                            minWidth: "32px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "clamp(0.45rem, 0.8vw, 0.7rem)",
+                          }}
+                        >
+                          {questionIndex + 1}
+                        </div>
+
+                        {playerNames.map((playerName) => {
+                          let playerAnswer = "";
                           const playerAnswersData = participantAnswers.find(
                             (p) => p.playerName.trim().toLowerCase() === playerName.trim().toLowerCase()
                           );
+                          
                           if (playerAnswersData && playerAnswersData.answers) {
                             const answerArray = playerAnswersData.answers;
                             let index = questionIndex;
-                            // Détection et correction du décalage
                             if (answerArray.length === answers.length + 1) {
                               index = questionIndex + 1;
                             }
@@ -2498,95 +2584,101 @@ function MultiResultsScreen({
                           } else {
                             playerAnswer = "?";
                           }
-                        }
 
-                        const isCorrect = status === "correct";
-                        const isIncorrect = status === "incorrect";
-                        const isNeutral = status === "neutral";
+                          const status = getCellStatus(playerName, questionIndex);
+                          const isCorrect = status === "correct";
+                          const isIncorrect = status === "incorrect";
+                          const isNeutral = status === "neutral";
 
-                        let bgColor = "rgba(255,255,255,0.03)";
-                        let textColor = "var(--text-color)";
-                        let borderColor = "transparent";
-                        let borderWidth = "1px";
-                        let icon = null;
+                          let bgColor = "rgba(255,255,255,0.02)";
+                          let textColor = "rgba(255,255,255,0.3)";
+                          let borderColor = "rgba(255,255,255,0.05)";
+                          let borderWidth = "1px";
+                          let icon = null;
 
-                        if (isCorrect) {
-                          bgColor = "rgba(34, 197, 94, 0.12)";
-                          textColor = "var(--success-color)";
-                          borderColor = "var(--success-color)";
-                          icon = <FontAwesomeIcon icon={faCheck} className="text-[0.3rem] md:text-xs mr-0.5" style={{ color: "var(--success-color)" }} />;
-                        } else if (isIncorrect) {
-                          bgColor = "rgba(239, 68, 68, 0.12)";
-                          textColor = "var(--error-color)";
-                          borderColor = "var(--error-color)";
-                          icon = <FontAwesomeIcon icon={faXmark} className="text-[0.3rem] md:text-xs mr-0.5" style={{ color: "var(--error-color)" }} />;
-                        } else if (isNeutral) {
-                          bgColor = "rgba(255,255,255,0.02)";
-                          textColor = "rgba(255,255,255,0.25)";
-                          borderColor = "rgba(255,255,255,0.05)";
-                          icon = <FontAwesomeIcon icon={faCircle} className="text-[0.25rem] md:text-[0.4rem] mr-0.5" style={{ color: "rgba(255,255,255,0.15)" }} />;
-                        }
+                          if (isCorrect) {
+                            bgColor = "rgba(34, 197, 94, 0.15)";
+                            textColor = "var(--success-color)";
+                            borderColor = "var(--success-color)";
+                            icon = <FontAwesomeIcon icon={faCheck} className="text-[0.35rem] md:text-[0.6rem]" style={{ color: "var(--success-color)" }} />;
+                          } else if (isIncorrect) {
+                            bgColor = "rgba(239, 68, 68, 0.15)";
+                            textColor = "var(--error-color)";
+                            borderColor = "var(--error-color)";
+                            icon = <FontAwesomeIcon icon={faXmark} className="text-[0.35rem] md:text-[0.6rem]" style={{ color: "var(--error-color)" }} />;
+                          } else if (isNeutral) {
+                            bgColor = "rgba(255,255,255,0.02)";
+                            textColor = "rgba(255,255,255,0.2)";
+                            borderColor = "rgba(255,255,255,0.05)";
+                            icon = <FontAwesomeIcon icon={faCircle} className="text-[0.3rem] md:text-[0.4rem]" style={{ color: "rgba(255,255,255,0.15)" }} />;
+                          }
 
-                        const isClickable = isHost && roomStatus === "reviewing";
+                          const isClickable = isHost && roomStatus === "reviewing";
 
-                        return (
-                          <div
-                            key={playerName}
-                            className="text-center rounded-lg transition-all duration-200 font-medium"
-                            style={{
-                              backgroundColor: bgColor,
-                              color: textColor,
-                              border: `${borderWidth} solid ${borderColor}`,
-                              cursor: isClickable ? "pointer" : "default",
-                              height: "32px",
-                              minWidth: "50px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              gap: "0.15rem",
-                              fontSize: "clamp(0.4rem, 0.8vw, 0.65rem)",
-                              padding: "0.1rem 0.3rem",
-                              marginRight: "2px",
-                            }}
-                            onClick={() => {
-                              if (isClickable) {
-                                handleCellClick(playerName, questionIndex);
-                              }
-                            }}
-                            title={isClickable ? "Cliquez pour valider" : ""}
-                          >
-                            {icon}
-                            {playerAnswer === "SKIP" || playerAnswer === "" ? (
-                              <span className="font-bold text-[0.35rem] md:text-[0.65rem] uppercase tracking-wider" style={{ opacity: 0.6 }}>
-                                SKIP
-                              </span>
-                            ) : (
-                              <span className="truncate text-[0.4rem] md:text-sm font-medium">{playerAnswer || "?"}</span>
-                            )}
-                          </div>
-                        );
-                      })}
+                          return (
+                            <div
+                              key={playerName}
+                              className="text-center rounded-lg transition-all duration-200 font-medium"
+                              style={{
+                                backgroundColor: bgColor,
+                                color: textColor,
+                                border: `${borderWidth} solid ${borderColor}`,
+                                cursor: isClickable ? "pointer" : "default",
+                                minHeight: "28px",
+                                height: "auto",
+                                minWidth: "50px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "2px",
+                                fontSize: "clamp(0.4rem, 0.75vw, 0.6rem)",
+                                padding: "2px 4px",
+                                marginRight: "2px",
+                                wordBreak: "break-word",
+                                lineHeight: "1.2",
+                              }}
+                              onClick={() => {
+                                if (isClickable) {
+                                  handleCellClick(playerName, questionIndex);
+                                }
+                              }}
+                              title={isClickable ? "Cliquez pour valider cette réponse" : ""}
+                            >
+                              {icon}
+                              {playerAnswer === "SKIP" || playerAnswer === "" ? (
+                                <span className="font-bold text-[0.35rem] md:text-[0.55rem] uppercase tracking-wider" style={{ opacity: 0.5 }}>
+                                  SKIP
+                                </span>
+                              ) : (
+                                <span className="truncate max-w-[80px] md:max-w-none">{playerAnswer || "?"}</span>
+                              )}
+                            </div>
+                          );
+                        })}
 
-                      {/* ✅ Colonne de correction - MÊME TAILLE DE POLICE */}
-                      <div className="text-center flex items-center justify-center gap-1" style={{ 
-                        color: "var(--accent-color)",
-                        fontWeight: "600",
-                        height: "32px",
-                        minWidth: `${correctionColumnWidth}px`,
-                        padding: "0.1rem 0.4rem",
-                      }}>
-                        <FontAwesomeIcon icon={faCheck} className="text-[0.3rem] md:text-sm" style={{ color: "var(--accent-color)" }} />
-                        <span className="text-[0.4rem] md:text-sm font-semibold whitespace-nowrap overflow-visible">
-                          {correctAnswer}
-                        </span>
+                        <div 
+                          className="text-center flex items-center justify-center gap-1.5"
+                          style={{ 
+                            color: "var(--accent-color)",
+                            fontWeight: "600",
+                            minHeight: "28px",
+                            minWidth: `${Math.max(correctionColumnWidth, 120)}px`,
+                            padding: "2px 4px",
+                            fontSize: "clamp(0.4rem, 0.75vw, 0.65rem)",
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faCheckCircle} className="text-[0.4rem] md:text-[0.7rem]" style={{ color: "var(--success-color)" }} />
+                          <span className="font-semibold whitespace-nowrap overflow-visible">
+                            {correctAnswer}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            {/* Légende */}
             <div className="flex flex-wrap justify-center gap-1 md:gap-3 text-[0.5rem] md:text-sm py-2">
               <span className="flex items-center gap-1 px-2 md:px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(34, 197, 94, 0.08)", border: "1px solid rgba(34, 197, 94, 0.2)" }}>
                 <FontAwesomeIcon icon={faCheck} className="text-[0.4rem] md:text-xs" style={{ color: "var(--success-color)" }} />
@@ -2606,9 +2698,13 @@ function MultiResultsScreen({
               <div className="space-y-2">
                 <div className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
                   {allVerifiedCheck ? (
-                    <span style={{ color: "var(--success-color)" }}>✅ Toutes les cellules sont vérifiées !</span>
+                    <span style={{ color: "var(--success-color)" }}>
+                      <FontAwesomeIcon icon={faCheck} className="mr-1" /> Toutes les cellules sont vérifiées !
+                    </span>
                   ) : (
-                    <span>⚠️ {verifiedCells}/{totalCells} cellules vérifiées</span>
+                    <span>
+                      <FontAwesomeIcon icon={faTriangleExclamation} className="mr-1" /> {verifiedCells}/{totalCells} cellules vérifiées
+                    </span>
                   )}
                 </div>
                 
@@ -2638,12 +2734,12 @@ function MultiResultsScreen({
                   {allVerifiedCheck ? (
                     <>
                       <FontAwesomeIcon icon={faCheck} className="mr-2" />
-                      ✅ CONFIRMER ({verifiedCells}/{totalCells})
+                      CONFIRMER ({verifiedCells}/{totalCells})
                     </>
                   ) : (
                     <>
                       <FontAwesomeIcon icon={faHourglassHalf} className="mr-2" />
-                      ⏳ {verifiedCells}/{totalCells} - Validez toutes les cellules
+                      {verifiedCells}/{totalCells} - Validez toutes les cellules
                     </>
                   )}
                 </button>
@@ -2659,7 +2755,6 @@ function MultiResultsScreen({
           </>
         )}
 
-        {/* RÉSULTATS FINAUX */}
         {allDone && roomStatus === "finished" && (
           <>
             <div
@@ -2673,23 +2768,27 @@ function MultiResultsScreen({
               }}
             >
               <h2 className="text-xl md:text-2xl font-extrabold" style={{ color: "var(--accent-color)" }}>
-                🏆 RÉSULTAT FINAL
+                <FontAwesomeIcon icon={faTrophy} className="mr-2" /> RÉSULTAT FINAL
               </h2>
 
               {winner && winner.name === userName && (
                 <p className="text-xl md:text-2xl font-extrabold" style={{ color: "var(--success-color)" }}>
-                  🎉 Vous avez gagné !
+                  <FontAwesomeIcon icon={faFaceSmile} className="mr-2" /> Vous avez gagné !
                 </p>
               )}
               {winner && winner.name !== userName && (
                 <p className="text-xl md:text-2xl font-extrabold" style={{ color: "var(--accent-color)" }}>
-                  🏆 Victoire de <span style={{ color: "var(--accent-color)" }}>{winner.name}</span> !
+                  <FontAwesomeIcon icon={faTrophy} className="mr-2" /> Victoire de <span style={{ color: "var(--accent-color)" }}>{winner.name}</span> !
                 </p>
               )}
 
               <div className="space-y-1 md:space-y-2 text-left mt-2 md:mt-4">
                 {sortedResults.map((p, idx) => {
-                  const medals = ["🥇", "🥈", "🥉"];
+                  const medals = [
+                    <FontAwesomeIcon key="gold" icon={faMedal} className="rank-gold" />,
+                    <FontAwesomeIcon key="silver" icon={faMedal} className="rank-silver" />,
+                    <FontAwesomeIcon key="bronze" icon={faMedal} className="rank-bronze" />
+                  ];
                   const rank = medals[idx] ?? `#${idx + 1}`;
                   const isMe = p.name === userName;
                   return (
@@ -2703,7 +2802,9 @@ function MultiResultsScreen({
                     >
                       <div className="flex items-center gap-1 md:gap-3">
                         <span className="text-base md:text-xl min-w-[1.5ch] md:min-w-[2ch]">{rank}</span>
-                        <span className="text-sm md:text-base">{p.name === hostName ? "👑" : "👤"}</span>
+                        <span className="text-sm md:text-base">
+                          <FontAwesomeIcon icon={p.name === hostName ? faCrown : faUser} />
+                        </span>
                         <span
                           className="font-semibold text-xs md:text-sm"
                           style={{ color: isMe ? "var(--accent-color)" : "var(--text-color)" }}
@@ -2728,7 +2829,7 @@ function MultiResultsScreen({
                         </span>
                         {typeof p.avgTimePerQuestion === "number" && (
                           <span className="text-[0.55rem] md:text-sm font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>
-                            ⏱️ {p.avgTimePerQuestion.toFixed(1)}s
+                            <FontAwesomeIcon icon={faStopwatch} className="mr-1" /> {p.avgTimePerQuestion.toFixed(1)}s
                           </span>
                         )}
                       </div>
@@ -2750,7 +2851,7 @@ function MultiResultsScreen({
                     cursor: isReplaying ? "wait" : "pointer",
                   }}
                 >
-                  {isReplaying ? "⏳ Rechargement..." : "🔄 REJOUER"}
+                  {isReplaying ? <><FontAwesomeIcon icon={faSpinner} spin className="mr-2" /> Rechargement...</> : <><FontAwesomeIcon icon={faRotateRight} className="mr-2" /> REJOUER</>}
                 </button>
               )}
               <button
@@ -2763,13 +2864,13 @@ function MultiResultsScreen({
                   cursor: "pointer",
                 }}
               >
-                🏠 MENU PRINCIPAL
+                <FontAwesomeIcon icon={faHouse} className="mr-2" /> MENU PRINCIPAL
               </button>
             </div>
 
             {!isHost && (
               <p className="text-center text-[0.6rem] md:text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
-                💡 Seul l'hôte peut relancer une partie
+                <FontAwesomeIcon icon={faLightbulb} className="mr-1" /> Seul l'hôte peut relancer une partie
               </p>
             )}
           </>
@@ -2792,7 +2893,9 @@ function LoadingScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center fade-in">
-        <div className="text-4xl md:text-6xl mb-4 md:mb-6 animate-bounce">⚽</div>
+        <div className="text-4xl md:text-6xl mb-4 md:mb-6 animate-bounce">
+          <FontAwesomeIcon icon={faFutbol} />
+        </div>
         <p className="text-lg md:text-xl font-semibold" style={{ color: "var(--accent-color)" }}>
           Chargement du quiz...
         </p>
@@ -2818,7 +2921,9 @@ function ErrorScreen({ message, onRetry }: { message: string; onRetry: () => voi
   return (
     <div className="min-h-screen flex items-center justify-center p-3 md:p-4">
       <div className="text-center fade-in max-w-md">
-        <div className="text-4xl md:text-6xl mb-4 md:mb-6">😢</div>
+        <div className="text-4xl md:text-6xl mb-4 md:mb-6">
+          <FontAwesomeIcon icon={faFaceFrown} />
+        </div>
         <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4" style={{ color: "var(--error-color)" }}>
           Oops ! Une erreur est survenue
         </h2>
@@ -2834,7 +2939,7 @@ function ErrorScreen({ message, onRetry }: { message: string; onRetry: () => voi
             cursor: "pointer",
           }}
         >
-          🔄 Réessayer
+          <FontAwesomeIcon icon={faRotateRight} className="mr-2" /> Réessayer
         </button>
       </div>
     </div>
@@ -2846,7 +2951,9 @@ function AllCompletedScreen({ onHome }: { onHome: () => void }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-3 md:p-4">
       <div className="text-center fade-in max-w-md">
-        <div className="text-6xl md:text-8xl mb-4 md:mb-6">🏅</div>
+        <div className="text-6xl md:text-8xl mb-4 md:mb-6">
+          <FontAwesomeIcon icon={faMedal} />
+        </div>
         <h2 className="text-2xl md:text-4xl font-extrabold mb-3 md:mb-4" style={{ color: "var(--accent-color)" }}>
           Bravo, Champion !
         </h2>
@@ -2869,7 +2976,7 @@ function AllCompletedScreen({ onHome }: { onHome: () => void }) {
             cursor: "pointer",
           }}
         >
-          🏠 Menu Principal
+          <FontAwesomeIcon icon={faHouse} className="mr-2" /> Menu Principal
         </button>
       </div>
     </div>
