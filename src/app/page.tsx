@@ -115,7 +115,7 @@ function ExitConfirmationModal({
           <div className="flex gap-3">
             <button
               onClick={onCancel}
-              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02]"
+              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02] min-h-[44px]"
               style={{
                 backgroundColor: "var(--surface-color)",
                 border: "2px solid var(--card-border)",
@@ -127,7 +127,7 @@ function ExitConfirmationModal({
             </button>
             <button
               onClick={onConfirm}
-              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02]"
+              className="flex-1 py-3 rounded-xl font-bold text-sm md:text-base transition-all duration-300 hover:scale-[1.02] min-h-[44px]"
               style={{
                 backgroundColor: "var(--error-color)",
                 color: "white",
@@ -246,6 +246,10 @@ function WelcomeScreen({ onStart }: { onStart: (name: string) => void }) {
             autoFocus
             maxLength={30}
             aria-label="Votre nom"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck="false"
+            style={{ fontSize: "16px" }}
           />
           {name.length > 0 && !isValid && (
             <p className="text-xs md:text-sm mb-3 md:mb-4 -mt-3 md:-mt-4 flex items-center gap-1.5" style={{ color: "var(--error-color)" }}>
@@ -257,7 +261,7 @@ function WelcomeScreen({ onStart }: { onStart: (name: string) => void }) {
           <button
             onClick={() => isValid && onStart(name.trim())}
             disabled={!isValid}
-            className={`btn btn-primary btn-block glow-effect text-sm md:text-base ${!isValid ? "btn-primary--disabled" : ""}`}
+            className={`btn btn-primary btn-block glow-effect text-sm md:text-base min-h-[44px] ${!isValid ? "btn-primary--disabled" : ""}`}
           >
             <FontAwesomeIcon icon={faTrophy} /> COMMENCER
           </button>
@@ -297,7 +301,7 @@ function ModeSelectScreen({
         <button
           id="btn-solo"
           onClick={onSolo}
-          className="btn btn-primary btn-mode glow-effect"
+          className="btn btn-primary btn-mode glow-effect min-h-[44px]"
         >
           <FontAwesomeIcon icon={faGamepad} className="btn-mode-icon" />
           <span className="btn-mode-title">Solo</span>
@@ -309,14 +313,14 @@ function ModeSelectScreen({
         <button
           id="btn-friends"
           onClick={onFriends}
-          className="btn btn-secondary btn-mode"
+          className="btn btn-secondary btn-mode min-h-[44px]"
         >
           <FontAwesomeIcon icon={faUsers} className="btn-mode-icon" />
           <span className="btn-mode-title">Avec des amis</span>
           <span className="btn-mode-desc">Affrontez un ami en temps réel</span>
         </button>
 
-        <button onClick={onBack} className="btn btn-ghost btn-block text-xs md:text-sm">
+        <button onClick={onBack} className="btn btn-ghost btn-block text-xs md:text-sm min-h-[44px]">
           <FontAwesomeIcon icon={faArrowLeft} /> Retour
         </button>
       </div>
@@ -364,7 +368,6 @@ function FriendLobbyScreen({
   const previousParticipantsRef = useRef<string[] | null>(null);
   const previousHostRef = useRef<string | null>(null);
 
-  // Refs pour la gestion du popstate
   const showExitConfirmationRef = useRef(showExitConfirmation);
   const isLeavingRef = useRef(false);
   const isPopStateHandlingRef = useRef(false);
@@ -372,12 +375,10 @@ function FriendLobbyScreen({
 
   const isHost = userName === hostName;
 
-  // Met à jour le ref quand showExitConfirmation change
   useEffect(() => {
     showExitConfirmationRef.current = showExitConfirmation;
   }, [showExitConfirmation]);
 
-  // Gestion du bouton Retour
   useEffect(() => {
     if (!inLobby) return;
 
@@ -411,7 +412,6 @@ function FriendLobbyScreen({
     };
   }, [inLobby]);
 
-  // Nettoyage de l'historique
   useEffect(() => {
     if (!inLobby && hasPushedHistoryRef.current) {
       window.history.replaceState(null, "", window.location.href);
@@ -704,7 +704,7 @@ function FriendLobbyScreen({
                 id="btn-start-game"
                 onClick={handleStart}
                 disabled={isStarting || participants.length < 2}
-                className={`btn btn-primary btn-block glow-effect text-sm md:text-base ${
+                className={`btn btn-primary btn-block glow-effect text-sm md:text-base min-h-[44px] ${
                   isStarting || participants.length < 2 ? "btn-primary--disabled" : ""
                 }`}
                 title={participants.length < 2 ? "Au moins 2 joueurs sont nécessaires pour démarrer une partie" : ""}
@@ -746,7 +746,7 @@ function FriendLobbyScreen({
 
           <button 
             onClick={() => handleCancelLobby(false)} 
-            className="btn btn-ghost btn-block text-xs md:text-sm"
+            className="btn btn-ghost btn-block text-xs md:text-sm min-h-[44px]"
           >
             Quitter la salle
           </button>
@@ -791,12 +791,16 @@ function FriendLobbyScreen({
               maxLength={6}
               className="input-field input-field--mono flex-1 text-xs md:text-sm"
               aria-label="Code de la room"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck="false"
+              style={{ fontSize: "16px" }}
             />
             <button
               id="btn-join"
               onClick={handleJoin}
               disabled={isJoining || codeInput.trim().length < 6}
-              className={`btn btn-primary btn-sm ${codeInput.trim().length < 6 ? "btn-primary--disabled" : ""}`}
+              className={`btn btn-primary btn-sm min-h-[44px] ${codeInput.trim().length < 6 ? "btn-primary--disabled" : ""}`}
             >
               {isJoining ? <FontAwesomeIcon icon={faSpinner} spin /> : "Rejoindre"}
             </button>
@@ -809,7 +813,7 @@ function FriendLobbyScreen({
           id="btn-create"
           onClick={handleCreate}
           disabled={isCreating}
-          className="btn btn-secondary btn-block btn-mode"
+          className="btn btn-secondary btn-block btn-mode min-h-[44px]"
         >
           <span className="flex items-center gap-2 text-sm md:text-base">
             <FontAwesomeIcon icon={isCreating ? faSpinner : faKey} spin={isCreating} />
@@ -824,7 +828,7 @@ function FriendLobbyScreen({
           </p>
         )}
 
-        <button onClick={onBack} className="btn btn-ghost btn-block text-xs md:text-sm">
+        <button onClick={onBack} className="btn btn-ghost btn-block text-xs md:text-sm min-h-[44px]">
           <FontAwesomeIcon icon={faArrowLeft} /> Retour
         </button>
       </div>
@@ -867,18 +871,15 @@ function QuizScreen({
   const timeLeftRef = useRef<number>(initialTime);
   const isTimerActiveRef = useRef(false);
 
-  // Refs pour la gestion du popstate
   const isLeavingRef = useRef(false);
   const isPopStateHandlingRef = useRef(false);
   const hasPushedHistoryRef = useRef(false);
   const showExitConfirmationRef = useRef(showExitConfirmation);
 
-  // Met à jour le ref
   useEffect(() => {
     showExitConfirmationRef.current = showExitConfirmation;
   }, [showExitConfirmation]);
 
-  // Gestion du bouton Retour
   useEffect(() => {
     if (!onQuit) return;
 
@@ -912,7 +913,6 @@ function QuizScreen({
     };
   }, [onQuit]);
 
-  // Nettoyage
   useEffect(() => {
     if (!onQuit && hasPushedHistoryRef.current) {
       window.history.replaceState(null, "", window.location.href);
@@ -1089,7 +1089,7 @@ function QuizScreen({
             <button
               onClick={() => setShowExitConfirmation(true)}
               title="Retourner au menu principal"
-              className="btn-football px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-[0.65rem] md:text-sm font-semibold transition-all duration-200 flex items-center gap-1"
+              className="btn-football px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-[0.65rem] md:text-sm font-semibold transition-all duration-200 flex items-center gap-1 min-h-[44px]"
               style={{
                 backgroundColor: "rgba(255,255,255,0.08)",
                 border: "1px solid rgba(255,255,255,0.2)",
@@ -1135,7 +1135,7 @@ function QuizScreen({
             />
           </div>
           <span
-            className={`text-lg md:text-2xl font-bold min-w-[2.5ch] md:min-w-[3ch] text-right ${
+            className={`text-xl md:text-2xl font-bold min-w-[3ch] md:min-w-[3ch] text-right timer-display ${
               timeRemaining <= 5 ? "timer-critical" : ""
             }`}
             style={{
@@ -1235,13 +1235,18 @@ function QuizScreen({
                 }
               }}
               placeholder="Tapez le nom du joueur..."
-              className="w-full px-3 md:px-4 py-2 md:py-3 rounded-xl text-base md:text-lg outline-none mb-4 md:mb-6 transition-all duration-300"
+              className="w-full px-4 py-3 md:px-4 md:py-3 rounded-xl text-base md:text-lg outline-none mb-4 md:mb-6 transition-all duration-300"
               style={{
                 backgroundColor: "rgba(255,255,255,0.05)",
                 border: "2px solid var(--card-border)",
                 color: "var(--text-color)",
+                fontSize: "16px",
               }}
               autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck="false"
+              inputMode="text"
               aria-label="Réponse"
             />
 
@@ -1249,7 +1254,7 @@ function QuizScreen({
               <button
                 onClick={() => processAnswer(userInput, false)}
                 disabled={userInput.trim().length === 0}
-                className="btn-football flex-1 py-2 md:py-3 rounded-xl text-sm md:text-lg font-bold uppercase tracking-wider transition-all duration-300"
+                className="btn-football flex-1 py-3 md:py-3 rounded-xl text-sm md:text-lg font-bold uppercase tracking-wider transition-all duration-300 min-h-[48px]"
                 style={{
                   backgroundColor:
                     userInput.trim().length > 0
@@ -1268,7 +1273,7 @@ function QuizScreen({
 
               <button
                 onClick={() => processAnswer("", true)}
-                className="btn-football px-3 md:px-6 py-2 md:py-3 rounded-xl text-sm md:text-lg font-bold uppercase tracking-wider transition-all duration-300"
+                className="btn-football px-4 md:px-6 py-3 md:py-3 rounded-xl text-sm md:text-lg font-bold uppercase tracking-wider transition-all duration-300 min-h-[48px]"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.05)",
                   border: "2px solid rgba(255,255,255,0.2)",
@@ -1369,10 +1374,10 @@ function ResultsScreen({
         body: JSON.stringify({ sessionId, verifiedAnswers }),
       });
       if (!response.ok) {
-        console.warn("⚠️ Vérification des réponses échouée");
+        console.warn("Vérification des rÃ©ponses Ã©chouÃ©e");
       }
     } catch (error) {
-      console.error("❌ Erreur de vérification:", error);
+      console.error("Erreur de vÃ©rification:", error);
     }
 
     setFinalScore(score);
@@ -1551,7 +1556,7 @@ function ResultsScreen({
             <>
               <button
                 onClick={confirmScore}
-                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect"
+                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-sm md:text-xl font-bold uppercase tracking-wider glow-effect min-h-[48px]"
                 style={{
                   backgroundColor: "var(--accent-color)",
                   color: "var(--background-color)",
@@ -1562,7 +1567,7 @@ function ResultsScreen({
               </button>
               <button
                 onClick={onHome}
-                className="btn-football py-3 md:py-4 px-4 md:px-6 rounded-xl text-sm md:text-lg font-bold uppercase tracking-wider transition-all duration-300"
+                className="btn-football py-3 md:py-4 px-4 md:px-6 rounded-xl text-sm md:text-lg font-bold uppercase tracking-wider transition-all duration-300 min-h-[48px]"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.08)",
                   border: "2px solid rgba(255,255,255,0.2)",
@@ -1577,7 +1582,7 @@ function ResultsScreen({
             <>
               <button
                 onClick={onReplay}
-                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect"
+                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-sm md:text-xl font-bold uppercase tracking-wider glow-effect min-h-[48px]"
                 style={{
                   backgroundColor: "var(--accent-color)",
                   color: "var(--background-color)",
@@ -1588,7 +1593,7 @@ function ResultsScreen({
               </button>
               <button
                 onClick={onHome}
-                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider transition-all duration-300"
+                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-sm md:text-xl font-bold uppercase tracking-wider transition-all duration-300 min-h-[48px]"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.08)",
                   border: "2px solid rgba(255,255,255,0.2)",
@@ -1740,7 +1745,7 @@ function ResultsScreen({
   );
 }
 
-// ─────────────── MULTI RESULTS SCREEN (RESPONSIVE) ───────────────
+// ─────────────── MULTI RESULTS SCREEN ───────────────
 function MultiResultsScreen({
   answers,
   userName,
@@ -2071,7 +2076,7 @@ function MultiResultsScreen({
   };
 
   const confirmResults = async () => {
-    console.log("🟢 confirmResults appelée !");
+    console.log("confirmResults appelÃ©e !");
     console.log("isHost:", isHost);
     console.log("allVerified:", allVerified);
     console.log("corrections:", corrections);
@@ -2081,28 +2086,28 @@ function MultiResultsScreen({
     console.log("totalCells:", playerNames.length * answers.length);
     
     if (!isHost) {
-      console.log("❌ Pas le host");
+      console.log("Pas le host");
       return;
     }
     
     if (!allVerified) {
-      console.log("❌ Pas toutes les cellules vérifiées");
+      console.log("Pas toutes les cellules vÃ©rifiÃ©es");
       return;
     }
 
     try {
-      console.log("✅ Tout est bon, on calcule les scores...");
+      console.log("Tout est bon, on calcule les scores...");
       
       const finalScores = playerNames.map((playerName) => {
         let score = 0;
-        console.log(`📊 Calcul du score pour ${playerName}:`);
+        console.log(`Calcul du score pour ${playerName}:`);
         
         for (let i = 0; i < answers.length; i++) {
           const correction = corrections.find(
             (c) => c.playerName === playerName && c.questionIndex === i
           );
           const isCorrect = correction ? correction.isCorrect : false;
-          console.log(`  Question ${i+1}: ${isCorrect ? '✅' : '❌'}`);
+          console.log(`  Question ${i+1}: ${isCorrect ? 'correct' : 'incorrect'}`);
           if (isCorrect) score++;
         }
         
@@ -2119,7 +2124,7 @@ function MultiResultsScreen({
         };
       });
 
-      console.log("📊 Scores finaux calculés:", finalScores);
+      console.log("Scores finaux calculÃ©s:", finalScores);
 
       for (const p of finalScores) {
         const response = await fetch("/api/room/score", {
@@ -2137,9 +2142,9 @@ function MultiResultsScreen({
         });
         
         if (!response.ok) {
-          console.error(`❌ Erreur sauvegarde score pour ${p.name}:`, await response.text());
+          console.error(`Erreur sauvegarde score pour ${p.name}:`, await response.text());
         } else {
-          console.log(`✅ Score sauvegardé pour ${p.name}: ${p.score}/${answers.length}`);
+          console.log(`Score sauvegardÃ© pour ${p.name}: ${p.score}/${answers.length}`);
         }
       }
 
@@ -2152,7 +2157,7 @@ function MultiResultsScreen({
         }),
       });
 
-      console.log("✅ Résultats sauvegardés !");
+      console.log("RÃ©sultats sauvegardÃ©s !");
       
       const sorted = [...finalScores].sort((a, b) => {
         const scoreA = a.score ?? 0;
@@ -2175,7 +2180,7 @@ function MultiResultsScreen({
         setShowConfetti(true);
       }
     } catch (error) {
-      console.error("❌ Erreur confirmation résultats:", error);
+      console.error("Erreur confirmation rÃ©sultats:", error);
     }
   };
 
@@ -2243,7 +2248,7 @@ function MultiResultsScreen({
 
   const forceRefresh = async () => {
     try {
-      console.log("🔄 Rafraîchissement des données...");
+      console.log("RafraÃ®chissement des donnÃ©es...");
       const res = await fetch(`/api/room/status?code=${roomCode}`);
       const data = await res.json();
       if (res.ok) {
@@ -2259,12 +2264,12 @@ function MultiResultsScreen({
           setWaitingForAll(false);
         }
         
-        console.log("🔄 Données rafraîchies:", data);
+        console.log("DonnÃ©es rafraÃ®chies:", data);
       } else {
-        console.error("❌ Erreur refresh:", data.error);
+        console.error("Erreur refresh:", data.error);
       }
     } catch (error) {
-      console.error("❌ Erreur refresh:", error);
+      console.error("Erreur refresh:", error);
     }
   };
 
@@ -2311,7 +2316,7 @@ function MultiResultsScreen({
           {isHost && (
             <button
               onClick={forceRefresh}
-              className="mt-2 px-4 py-1 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105"
+              className="mt-2 px-4 py-1 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 min-h-[44px]"
               style={{
                 backgroundColor: "rgba(255,255,255,0.08)",
                 border: "1px solid rgba(255,255,255,0.15)",
@@ -2444,7 +2449,7 @@ function MultiResultsScreen({
             </div>
 
             <div
-              className="rounded-2xl overflow-hidden shadow-lg border border-[var(--card-border)]"
+              className="rounded-2xl overflow-hidden shadow-lg border border-[var(--card-border)] scroll-indicator"
               style={{ 
                 backgroundColor: "var(--card-bg)",
               }}
@@ -2631,8 +2636,8 @@ function MultiResultsScreen({
                                 alignItems: "center",
                                 justifyContent: "center",
                                 gap: "2px",
-                                fontSize: "clamp(0.4rem, 0.75vw, 0.6rem)",
-                                padding: "2px 4px",
+                                fontSize: "clamp(0.5rem, 0.75vw, 0.6rem)",
+                                padding: "3px 4px",
                                 marginRight: "2px",
                                 wordBreak: "break-word",
                                 lineHeight: "1.2",
@@ -2710,7 +2715,7 @@ function MultiResultsScreen({
                 
                 <button
                   onClick={() => {
-                    console.log("🟢 Bouton CONFIRMER cliqué !");
+                    console.log("Bouton CONFIRMER cliquÃ© !");
                     console.log("allVerifiedCheck:", allVerifiedCheck);
                     console.log("corrections:", corrections);
                     console.log("totalCells:", totalCells);
@@ -2718,11 +2723,11 @@ function MultiResultsScreen({
                     if (allVerifiedCheck) {
                       confirmResults();
                     } else {
-                      console.log("❌ Pas toutes les cellules vérifiées !");
+                      console.log("Pas toutes les cellules vÃ©rifiÃ©es !");
                     }
                   }}
                   disabled={!allVerifiedCheck}
-                  className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider transition-all duration-300 ${
+                  className={`btn-football w-full py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider transition-all duration-300 min-h-[48px] ${
                     allVerifiedCheck ? "glow-effect" : "opacity-50 cursor-not-allowed"
                   }`}
                   style={{
@@ -2844,7 +2849,7 @@ function MultiResultsScreen({
                 <button
                   onClick={handleReplay}
                   disabled={isReplaying}
-                  className="btn-football flex-1 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect"
+                  className="btn-football flex-1 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect min-h-[48px]"
                   style={{
                     backgroundColor: isReplaying ? "rgba(255,215,0,0.4)" : "var(--accent-color)",
                     color: "var(--background-color)",
@@ -2856,7 +2861,7 @@ function MultiResultsScreen({
               )}
               <button
                 onClick={onHome}
-                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider transition-all duration-300"
+                className="btn-football flex-1 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider transition-all duration-300 min-h-[48px]"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.08)",
                   border: "2px solid rgba(255,255,255,0.2)",
@@ -2932,7 +2937,7 @@ function ErrorScreen({ message, onRetry }: { message: string; onRetry: () => voi
         </p>
         <button
           onClick={onRetry}
-          className="btn-football px-6 md:px-8 py-2 md:py-3 rounded-xl text-base md:text-lg font-bold"
+          className="btn-football px-6 md:px-8 py-2 md:py-3 rounded-xl text-base md:text-lg font-bold min-h-[44px]"
           style={{
             backgroundColor: "var(--accent-color)",
             color: "var(--background-color)",
@@ -2969,7 +2974,7 @@ function AllCompletedScreen({ onHome }: { onHome: () => void }) {
         </p>
         <button
           onClick={onHome}
-          className="btn-football px-6 md:px-10 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect"
+          className="btn-football px-6 md:px-10 py-3 md:py-4 rounded-xl text-base md:text-xl font-bold uppercase tracking-wider glow-effect min-h-[44px]"
           style={{
             backgroundColor: "var(--accent-color)",
             color: "var(--background-color)",
@@ -3032,9 +3037,9 @@ export default function Home() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code: savedRoomCode, userName: savedUserName }),
           });
-          console.log("🧹 Room nettoyée après refresh");
+          console.log("Room nettoyÃ©e aprÃ¨s refresh");
         } catch (error) {
-          console.error("Erreur nettoyage room après refresh:", error);
+          console.error("Erreur nettoyage room aprÃ¨s refresh:", error);
         }
       };
 
@@ -3058,7 +3063,7 @@ export default function Home() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code: savedRoomCode, userName: savedUserName }),
           });
-          console.log("🧹 Room nettoyée avant fermeture");
+          console.log("Room nettoyÃ©e avant fermeture");
         } catch (error) {
           console.error("Erreur nettoyage room avant fermeture:", error);
         }
@@ -3084,7 +3089,7 @@ export default function Home() {
           setScreen("quiz");
         }
       } catch (e) {
-        console.warn("Impossible de restaurer l'état du quiz", e);
+        console.warn("Impossible de restaurer l'Ã©tat du quiz", e);
         sessionStorage.removeItem("quizState");
       }
     }
@@ -3239,10 +3244,10 @@ export default function Home() {
         });
 
         if (!response.ok) {
-          console.warn("⚠️ Sauvegarde des résultats échouée (status:", response.status, ")");
+          console.warn("Sauvegarde des rÃ©sultats Ã©chouÃ©e (status:", response.status, ")");
         }
       } catch (error) {
-        console.error("❌ Erreur de sauvegarde:", error);
+        console.error("Erreur de sauvegarde:", error);
       }
       setScreen("results");
     } else {
@@ -3264,9 +3269,9 @@ export default function Home() {
             }),
           });
 
-          console.log("✅ Score soumis automatiquement pour", userName);
+          console.log("Score soumis automatiquement pour", userName);
         } catch (error) {
-          console.error("❌ Erreur soumission automatique du score:", error);
+          console.error("Erreur soumission automatique du score:", error);
         }
 
         setScreen("multiResults");

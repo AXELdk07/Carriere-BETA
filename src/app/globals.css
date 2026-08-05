@@ -228,7 +228,6 @@ body {
   font-size: 1.75rem;
   margin-bottom: 0.75rem;
   box-shadow: var(--shadow-glow);
-  /* ✅ PAS d'animation sur le cadre - il reste fixe */
 }
 
 @media (min-width: 640px) {
@@ -1075,7 +1074,6 @@ body {
   }
 }
 
-/* ✅ Icône qui tourne (pour faFutbol) */
 .ballon-icon {
   display: inline-flex;
   align-items: center;
@@ -1112,7 +1110,6 @@ body {
   }
 }
 
-/* ✅ Icône qui pulse (pour faUsers) */
 .pulse-icon {
   display: inline-flex;
   align-items: center;
@@ -1198,9 +1195,8 @@ body {
   gap: 0.4rem;
 }
 
-/* ── Ligne 1 : © 2026 CARRIÈRE.BETA ── */
 .footer-copy {
-  font-size: 0.7rem; 
+  font-size: 0.7rem;
   font-weight: 400;
   color: var(--text-subtle);
   letter-spacing: 0.04em;
@@ -1209,7 +1205,7 @@ body {
 
 @media (min-width: 640px) {
   .footer-copy {
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
   }
 }
 
@@ -1219,7 +1215,6 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* ── Ligne 2 : Tagline ── */
 .footer-tagline {
   font-size: 0.75rem;
   font-weight: 300;
@@ -1235,7 +1230,6 @@ body {
   }
 }
 
-/* ── Séparateur ── */
 .footer-divider {
   width: 3rem;
   height: 1px;
@@ -1243,7 +1237,6 @@ body {
   background: linear-gradient(90deg, transparent, var(--card-border-accent), transparent);
 }
 
-/* ── Ligne 3 : Contact ── */
 .footer-contact {
   font-size: 0.75rem;
   font-weight: 300;
@@ -1276,6 +1269,203 @@ body {
   outline: 2px solid var(--accent-color);
   outline-offset: 3px;
   border-radius: 0.25rem;
+}
+
+/* ─────────────────────────────────────────────
+   OPTIMISATIONS MOBILE
+───────────────────────────────────────────── */
+
+/* 1. Éviter le zoom sur iOS pour les inputs */
+input,
+select,
+textarea,
+.input-field {
+  font-size: 16px !important;
+}
+
+/* 2. Taille minimum des éléments tactiles (Apple HIG) */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+[role="button"],
+.clickable,
+.btn,
+.btn-football {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* 3. Désactiver le highlight bleu sur les tap iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 4. Scroll fluide pour tous les conteneurs */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* 5. Optimisation des cards sur mobile */
+@media (max-width: 480px) {
+  .card {
+    padding: 0.875rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .card--accent {
+    border-width: 1.5px;
+  }
+}
+
+/* 6. Réduction des animations sur mobile (performance) */
+@media (max-width: 640px) {
+  .glow-effect {
+    animation-duration: 3.5s;
+  }
+
+  .ballon-icon {
+    animation-duration: 8s;
+  }
+
+  .pulse-icon {
+    animation-duration: 3.3s;
+  }
+}
+
+/* 7. Optimisation des modals sur mobile */
+@media (max-width: 480px) {
+  .modal-content {
+    margin: 0.5rem;
+    padding: 1rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* 8. Footer mobile */
+@media (max-width: 480px) {
+  .footer {
+    padding: 0.75rem 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .footer-copy {
+    font-size: 0.55rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.6rem;
+  }
+
+  .footer-contact {
+    font-size: 0.6rem;
+  }
+}
+
+/* 9. Indicateur de scroll pour les tableaux */
+.scroll-indicator {
+  position: relative;
+}
+
+.scroll-indicator::after {
+  content: '➜';
+  position: sticky;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-color);
+  font-size: 1.2rem;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: scrollPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: translateY(-50%) translateX(0); }
+  50% { opacity: 0.8; transform: translateY(-50%) translateX(4px); }
+}
+
+@media (min-width: 768px) {
+  .scroll-indicator::after {
+    display: none;
+  }
+}
+
+/* 10. Espacement des boutons en colonne sur mobile */
+@media (max-width: 480px) {
+  .btn-mode .btn-mode-title {
+    font-size: 1rem;
+  }
+
+  .btn-mode .btn-mode-icon {
+    font-size: 1.5rem;
+  }
+
+  .btn-mode .btn-mode-desc {
+    font-size: 0.7rem;
+  }
+}
+
+/* 11. Timer plus visible sur mobile */
+@media (max-width: 480px) {
+  .timer-display {
+    font-size: 1.25rem;
+    min-width: 2.5ch;
+  }
+}
+
+/* 12. Badge plus petit sur mobile */
+@media (max-width: 480px) {
+  .badge {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .badge--host {
+    font-size: 0.5rem;
+  }
+}
+
+/* 13. Room code plus lisible sur mobile */
+@media (max-width: 480px) {
+  .room-code {
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+    padding: 0.5rem 0.75rem;
+    letter-spacing: 0.15em;
+  }
+}
+
+/* 14. Checkbox plus grand sur mobile */
+.custom-checkbox {
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+}
+
+@media (max-width: 480px) {
+  .custom-checkbox {
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+  }
+}
+
+/* 15. Toast plus compact sur mobile */
+@media (max-width: 480px) {
+  .toast {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    width: min(95vw, 20rem);
+    border-radius: var(--radius-lg);
+  }
+
+  .toast-stack {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    width: min(95vw, 20rem);
+  }
 }
 
 /* Hide Next.js dev indicator */
