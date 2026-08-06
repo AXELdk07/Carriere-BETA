@@ -4,7 +4,6 @@ export interface QuizPlayer {
   career: string[];
 }
 
-// 145 joueurs - IDs réattribués le 05/08/2026
 export const PLAYERS_DATA: QuizPlayer[] = [
   {
     "playerId": 1,
@@ -37,6 +36,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Liverpool",
       "Chelsea",
       "AC Milan",
+      "Atlético Madrid",
       "Sagan Tosu"
     ]
   },
@@ -77,7 +77,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "VfB Stuttgart",
       "Bayern Munich",
       "Inter Milan",
-      "Marseille"
+      "Marseille",
+      "Inter Milan"
     ]
   },
   {
@@ -87,7 +88,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Marítimo",
       "Porto",
       "Real Madrid",
-      "Beşiktaş"
+      "Beşiktaş",
+      "Porto"
     ]
   },
   {
@@ -124,7 +126,9 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Manchester United",
       "Manchester City",
       "Juventus",
-      "Shanghai Shenhua"
+      "Boca Juniors",
+      "Shanghai Shenhua",
+      "Boca Juniors"
     ]
   },
   {
@@ -143,6 +147,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "FC Porto",
       "Wolverhampton",
+      "FC Porto",
       "Paris Saint-Germain"
     ]
   },
@@ -160,6 +165,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Milton Keynes Dons",
       "Tottenham Hotspur",
+      "Milton Keynes Dons",
       "Everton",
       "Beşiktaş",
       "Como"
@@ -182,6 +188,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Sevilla",
       "Real Madrid",
       "Paris Saint-Germain",
+      "Sevilla",
       "Monterrey"
     ]
   },
@@ -192,6 +199,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Dinamo Zagreb",
       "Zrinjski Mostar",
       "Inter Zaprešić",
+      "Dinamo Zagreb",
       "Tottenham Hotspur",
       "Real Madrid",
       "AC Milan"
@@ -208,7 +216,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "FC Barcelona",
       "Bayern Munich",
       "Aston Villa",
-      "Al-Duhail"
+      "Al-Duhail",
+      "Vasco da Gama"
     ]
   },
   {
@@ -217,6 +226,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Hellas Verona",
       "Sambonifacese",
+      "Hellas Verona",
       "Napoli",
       "Chelsea",
       "Arsenal",
@@ -229,6 +239,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Cagliari",
       "Como",
+      "Cagliari",
       "Inter Milan"
     ]
   },
@@ -241,7 +252,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Juventus",
       "Liverpool",
       "Fiorentina",
-      "Girona"
+      "Girona",
+      "Grêmio"
     ]
   },
   {
@@ -265,7 +277,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Manchester United",
       "Aston Villa",
-      "FC Barcelona"
+      "FC Barcelona",
+      "Manchester United"
     ]
   },
   {
@@ -308,7 +321,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "name": "Jordi Alba",
     "career": [
       "Valencia",
-      "Gimnàstic de Tarragone ",
+      "Gimnàstic de Tarragone	",
       "FC Barcelona",
       "Inter Miami"
     ]
@@ -319,6 +332,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Borussia Dortmund",
       "Bayern Munich",
+      "Borussia Dortmund",
       "PSV Eindhoven",
       "Eintracht Frankfurt"
     ]
@@ -332,6 +346,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Inter Milan",
       "Juventus",
       "Real Madrid",
+      "Juventus",
       "Al-Ahli"
     ]
   },
@@ -355,6 +370,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Genk",
       "Chelsea",
       "Werder Bremen",
+      "Chelsea",
       "VfL Wolfsburg",
       "Manchester City",
       "Napoli"
@@ -370,23 +386,12 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 35,
-    "name": "Lorenzo Insigne",
-    "career": [
-      "Napoli",
-      "Cavese",
-      "Foggia",
-      "Pescara",
-      "Toronto FC",
-      "Sampdoria"
-    ]
-  },
-  {
     "playerId": 36,
     "name": "Gerard Piqué",
     "career": [
       "Manchester United",
       "Zaragoza",
+      "Manchester United",
       "FC Barcelona"
     ]
   },
@@ -396,17 +401,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Bayern Munich",
       "Bayer Leverkusen",
+      "Bayern Munich",
       "Real Madrid"
-    ]
-  },
-  {
-    "playerId": 38,
-    "name": "Alessandro Nesta",
-    "career": [
-      "Lazio",
-      "AC Milan",
-      "Montreal Impact",
-      "Chennaiyin"
     ]
   },
   {
@@ -418,6 +414,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Millwall",
       "Norwich City",
       "Leicester City",
+      "Tottenham Hotspur",
       "Bayern Munich"
     ]
   },
@@ -428,7 +425,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Saint-Étienne",
       "Arsenal",
       "Nice",
-      "Marseille"
+      "Marseille",
+      "Arsenal"
     ]
   },
   {
@@ -469,7 +467,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Santos",
       "FC Barcelona",
       "Paris Saint-Germain",
-      "Al-Hilal"
+      "Al-Hilal",
+      "Santos"
     ]
   },
   {
@@ -482,6 +481,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Juventus",
       "Paris Saint-Germain",
       "São Paulo",
+      "FC Barcelona",
       "UNAM Pumas"
     ]
   },
@@ -509,24 +509,12 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 48,
-    "name": "Andrea Barzagli",
-    "career": [
-      "Rondinella",
-      "Pistoiese",
-      "Ascoli",
-      "Piacenza",
-      "Palermo",
-      "VfL Wolfsburg",
-      "Juventus"
-    ]
-  },
-  {
     "playerId": 49,
     "name": "Jadon Sancho",
     "career": [
       "Borussia Dortmund",
       "Manchester United",
+      "Borussia Dortmund",
       "Chelsea",
       "Aston Villa"
     ]
@@ -577,6 +565,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "São Paulo",
       "Real Madrid",
       "Porto",
+      "Real Madrid",
       "Manchester United",
       "Inter Miami"
     ]
@@ -597,6 +586,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Everton",
       "Manchester United",
+      "Everton",
       "DC United",
       "Derby County"
     ]
@@ -685,7 +675,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Fluminense",
       "AC Milan",
       "Paris Saint-Germain",
-      "Chelsea"
+      "Chelsea",
+      "Fluminense"
     ]
   },
   {
@@ -725,7 +716,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Chelsea",
       "Fiorentina",
       "AS Roma",
-      "Liverpool"
+      "Liverpool",
+      "Trabzonspor"
     ]
   },
   {
@@ -766,6 +758,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Manchester United",
       "Real Madrid",
       "Juventus",
+      "Manchester United",
       "Al-Nassr"
     ]
   },
@@ -803,6 +796,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Manchester United",
       "Juventus",
+      "Manchester United",
+      "Juventus",
       "Monaco"
     ]
   },
@@ -814,6 +809,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Schalke 04",
       "Sevilla",
       "FC Barcelona",
+      "Sevilla",
       "Al-Shabab"
     ]
   },
@@ -853,6 +849,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Genk",
       "Chelsea",
       "Atlético Madrid",
+      "Chelsea",
       "Real Madrid"
     ]
   },
@@ -873,7 +870,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "FC Barcelona",
       "Napoli",
       "Sevilla",
-      "Newell's Old Boys"
+      "Newell's Old Boys",
+      "Boca Juniors"
     ]
   },
   {
@@ -910,6 +908,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Livorno",
       "Roma",
+      "Livorno",
       "Fiorentina",
       "Juventus",
       "Los Angeles FC"
@@ -922,6 +921,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Real Sociedad",
       "Atlético Madrid",
       "FC Barcelona",
+      "Atlético Madrid",
       "Orlando City"
     ]
   },
@@ -933,6 +933,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Atlético Madrid",
       "Chelsea",
       "FC Barcelona",
+      "Chelsea",
       "AC Milan",
       "Al-Nassr"
     ]
@@ -987,7 +988,10 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Shakhtar Donetsk",
       "Bayern Munich",
       "Juventus",
+      "Bayern Munich",
+      "Juventus",
       "LA Galaxy",
+      "Grêmio",
       "Fluminense"
     ]
   },
@@ -1029,7 +1033,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "FC Barcelona",
       "Inter Milan",
       "Flamengo",
-      "Athletico Paranaense"
+      "Athletico Paranaense",
+      "Colo-Colo"
     ]
   },
   {
@@ -1115,7 +1120,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Fluminense",
       "Real Madrid",
-      "Olympiacos"
+      "Olympiacos",
+      "Fluminense"
     ]
   },
   {
@@ -1137,6 +1143,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Southampton",
       "Tottenham Hotspur",
       "Real Madrid",
+      "Tottenham Hotspur",
       "Los Angeles FC"
     ]
   },
@@ -1150,6 +1157,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Bari",
       "Juventus",
       "AC Milan",
+      "Juventus",
       "Union Berlin",
       "Fenerbahçe"
     ]
@@ -1188,6 +1196,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "RB Salzbourg",
       "FC Liefering",
+      "RB Salzbourg",
       "RB Leipzig",
       "Manchester United"
     ]
@@ -1244,7 +1253,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Juventus",
       "Arsenal",
       "FC Barcelona",
-      "New York Red Bulls"
+      "New York Red Bulls",
+      "Arsenal"
     ]
   },
   {
@@ -1255,8 +1265,10 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Ascoli",
       "Empoli",
       "Sion",
+      "Inter Milan",
       "Parma",
-      "Hellas Verona"
+      "Hellas Verona",
+      "Inter Milan"
     ]
   },
   {
@@ -1266,7 +1278,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Genk",
       "Bayer Leverkusen",
       "Aston Villa",
-      "Roma"
+      "Roma",
+      "Aston Villa"
     ]
   },
   {
@@ -1275,7 +1288,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Peñarol",
       "Real Madrid",
-      "Deportivo La Coruña"
+      "Deportivo La Coruña",
+      "Real Madrid"
     ]
   },
   {
@@ -1303,6 +1317,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Crystal Palace",
       "Manchester United",
       "Cardiff City",
+      "Crystal Palace",
       "Galatasaray",
       "Lyon",
       "Charlotte FC"
@@ -1336,6 +1351,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Chelsea",
       "Shanghai Shenhua",
       "Galatasaray",
+      "Chelsea",
       "Montreal Impact"
     ]
   },
@@ -1372,7 +1388,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Lech Poznań",
       "Borussia Dortmund",
       "Bayern Munich",
-      "FC Barcelona"
+      "FC Barcelona",
+      "Chicago Fire FC"
     ]
   },
   {
@@ -1403,6 +1420,8 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "São Paulo",
       "AC Milan",
       "Real Madrid",
+      "AC Milan",
+      "São Paulo",
       "Orlando City"
     ]
   },
@@ -1436,7 +1455,9 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "career": [
       "Parma",
       "Juventus",
-      "Paris Saint-Germain"
+      "Paris Saint-Germain",
+      "Juventus",
+      "Parma"
     ]
   },
   {
@@ -1510,6 +1531,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
       "Brescia",
       "Inter Milan",
       "Reggina",
+      "Brescia",
       "AC Milan",
       "Juventus",
       "New York City FC"
