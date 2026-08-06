@@ -4,7 +4,7 @@ export interface QuizPlayer {
   career: string[];
 }
 
-// 142 joueurs - IDs corrigés le 06/08/2026
+// 142 joueurs - IDs réattribués le 06/08/2026
 export const PLAYERS_DATA: QuizPlayer[] = [
   {
     "playerId": 1,
@@ -322,7 +322,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     "name": "Jordi Alba",
     "career": [
       "Valencia",
-      "Gimnàstic de Tarragone",
+      "Gimnàstic de Tarragone	",
       "FC Barcelona",
       "Inter Miami"
     ]
@@ -387,7 +387,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 35,
+    "playerId": 36,
     "name": "Gerard Piqué",
     "career": [
       "Manchester United",
@@ -397,7 +397,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 36,
+    "playerId": 37,
     "name": "Toni Kroos",
     "career": [
       "Bayern Munich",
@@ -407,7 +407,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 37,
+    "playerId": 39,
     "name": "Harry Kane",
     "career": [
       "Tottenham Hotspur",
@@ -420,7 +420,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 38,
+    "playerId": 40,
     "name": "William Saliba",
     "career": [
       "Saint-Étienne",
@@ -431,7 +431,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 39,
+    "playerId": 41,
     "name": "Raheem Sterling",
     "career": [
       "Liverpool",
@@ -442,7 +442,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 40,
+    "playerId": 42,
     "name": "Lionel Messi",
     "career": [
       "FC Barcelona",
@@ -451,7 +451,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 41,
+    "playerId": 43,
     "name": "Cesc Fàbregas",
     "career": [
       "Arsenal",
@@ -462,7 +462,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 42,
+    "playerId": 44,
     "name": "Neymar",
     "career": [
       "Santos",
@@ -473,7 +473,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 43,
+    "playerId": 45,
     "name": "Dani Alves",
     "career": [
       "Bahia",
@@ -487,7 +487,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 44,
+    "playerId": 46,
     "name": "Jamal Musiala",
     "career": [
       "Chelsea",
@@ -495,7 +495,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 45,
+    "playerId": 47,
     "name": "Aymen Abdennour",
     "career": [
       "Étoile du Sahel",
@@ -510,7 +510,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 46,
+    "playerId": 49,
     "name": "Jadon Sancho",
     "career": [
       "Borussia Dortmund",
@@ -521,7 +521,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 47,
+    "playerId": 50,
     "name": "Ousmane Dembélé",
     "career": [
       "Rennes",
@@ -531,7 +531,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 48,
+    "playerId": 51,
     "name": "João Neves",
     "career": [
       "Benfica",
@@ -539,7 +539,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 49,
+    "playerId": 52,
     "name": "Marcel Sabitzer",
     "career": [
       "Admira Wacker",
@@ -552,7 +552,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 50,
+    "playerId": 53,
     "name": "Désiré Doué",
     "career": [
       "Rennes",
@@ -560,7 +560,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 51,
+    "playerId": 54,
     "name": "Casemiro",
     "career": [
       "São Paulo",
@@ -572,7 +572,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 52,
+    "playerId": 55,
     "name": "Luís Figo",
     "career": [
       "Sporting CP",
@@ -582,7 +582,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 53,
+    "playerId": 56,
     "name": "Wayne Rooney",
     "career": [
       "Everton",
@@ -593,7 +593,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 54,
+    "playerId": 57,
     "name": "Khvicha Kvaratskhelia",
     "career": [
       "Dinamo Tbilisi",
@@ -606,7 +606,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 55,
+    "playerId": 58,
     "name": "Martin Ødegaard",
     "career": [
       "Strømsgodset",
@@ -618,7 +618,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 56,
+    "playerId": 59,
     "name": "Steven Gerrard",
     "career": [
       "Liverpool",
@@ -626,7 +626,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 57,
+    "playerId": 60,
     "name": "Raphinha",
     "career": [
       "Vitória de Guimarães",
@@ -637,7 +637,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 58,
+    "playerId": 61,
     "name": "Kai Havertz",
     "career": [
       "Bayer Leverkusen",
@@ -646,7 +646,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 59,
+    "playerId": 62,
     "name": "Wesley Sneijder",
     "career": [
       "Ajax",
@@ -658,7 +658,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 60,
+    "playerId": 63,
     "name": "Joško Gvardiol",
     "career": [
       "Dinamo Zagreb",
@@ -667,7 +667,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 61,
+    "playerId": 64,
     "name": "Thiago Silva",
     "career": [
       "Juventude",
@@ -681,7 +681,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 62,
+    "playerId": 65,
     "name": "Achraf Hakimi",
     "career": [
       "Real Madrid",
@@ -691,7 +691,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 63,
+    "playerId": 66,
     "name": "Lautaro Martínez",
     "career": [
       "Racing Club",
@@ -699,7 +699,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 64,
+    "playerId": 67,
     "name": "Paulo Dybala",
     "career": [
       "Instituto",
@@ -709,7 +709,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 65,
+    "playerId": 68,
     "name": "Mohamed Salah",
     "career": [
       "Al Mokawloon",
@@ -722,7 +722,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 66,
+    "playerId": 69,
     "name": "Petr Čech",
     "career": [
       "Chmel Blšany",
@@ -733,7 +733,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 67,
+    "playerId": 70,
     "name": "Eduardo Camavinga",
     "career": [
       "Rennes",
@@ -741,7 +741,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 68,
+    "playerId": 71,
     "name": "Gabriel Magalhães",
     "career": [
       "Avaí",
@@ -752,7 +752,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 69,
+    "playerId": 72,
     "name": "Cristiano Ronaldo",
     "career": [
       "Sporting CP",
@@ -764,7 +764,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 70,
+    "playerId": 73,
     "name": "Julián Álvarez",
     "career": [
       "River Plate",
@@ -773,7 +773,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 71,
+    "playerId": 74,
     "name": "Emre Can",
     "career": [
       "Bayern Munich",
@@ -784,7 +784,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 72,
+    "playerId": 75,
     "name": "Gianluigi Donnarumma",
     "career": [
       "AC Milan",
@@ -792,7 +792,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 73,
+    "playerId": 76,
     "name": "Paul Pogba",
     "career": [
       "Manchester United",
@@ -803,7 +803,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 74,
+    "playerId": 77,
     "name": "Ivan Rakitić",
     "career": [
       "Basel",
@@ -815,7 +815,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 75,
+    "playerId": 78,
     "name": "Ronald Araújo",
     "career": [
       "Boston River",
@@ -823,7 +823,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 76,
+    "playerId": 79,
     "name": "Son Heung-min",
     "career": [
       "Hamburger SV",
@@ -833,7 +833,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 77,
+    "playerId": 80,
     "name": "Frank Lampard",
     "career": [
       "West Ham United",
@@ -844,7 +844,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 78,
+    "playerId": 81,
     "name": "Thibaut Courtois",
     "career": [
       "Genk",
@@ -855,7 +855,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 79,
+    "playerId": 82,
     "name": "Xavi",
     "career": [
       "FC Barcelona",
@@ -863,7 +863,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 80,
+    "playerId": 83,
     "name": "Diego Maradona",
     "career": [
       "Argentinos Juniors",
@@ -876,7 +876,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 81,
+    "playerId": 84,
     "name": "Iker Casillas",
     "career": [
       "Real Madrid",
@@ -884,7 +884,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 82,
+    "playerId": 85,
     "name": "Julian Draxler",
     "career": [
       "Schalke 04",
@@ -895,7 +895,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 83,
+    "playerId": 86,
     "name": "Rodri",
     "career": [
       "Villarreal",
@@ -904,7 +904,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 84,
+    "playerId": 87,
     "name": "Giorgio Chiellini",
     "career": [
       "Livorno",
@@ -916,7 +916,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 85,
+    "playerId": 88,
     "name": "Antoine Griezmann",
     "career": [
       "Real Sociedad",
@@ -927,7 +927,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 86,
+    "playerId": 89,
     "name": "João Félix",
     "career": [
       "Benfica",
@@ -940,7 +940,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 87,
+    "playerId": 90,
     "name": "Javier Mascherano",
     "career": [
       "River Plate",
@@ -953,7 +953,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 88,
+    "playerId": 91,
     "name": "Hugo Lloris",
     "career": [
       "Nice",
@@ -963,7 +963,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 89,
+    "playerId": 92,
     "name": "Cafu",
     "career": [
       "São Paulo",
@@ -974,7 +974,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 90,
+    "playerId": 93,
     "name": "Sergio Busquets",
     "career": [
       "FC Barcelona",
@@ -982,7 +982,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 91,
+    "playerId": 94,
     "name": "Douglas Costa",
     "career": [
       "Grêmio",
@@ -997,7 +997,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 92,
+    "playerId": 95,
     "name": "Virgil van Dijk",
     "career": [
       "Groningen",
@@ -1007,7 +1007,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 93,
+    "playerId": 96,
     "name": "Christian Pulisic",
     "career": [
       "Borussia Dortmund",
@@ -1016,7 +1016,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 94,
+    "playerId": 97,
     "name": "Trent Alexander-Arnold",
     "career": [
       "Liverpool",
@@ -1024,7 +1024,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 95,
+    "playerId": 98,
     "name": "Arturo Vidal",
     "career": [
       "Colo-Colo",
@@ -1039,7 +1039,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 96,
+    "playerId": 99,
     "name": "Erling Haaland",
     "career": [
       "Bryne FK",
@@ -1050,7 +1050,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 97,
+    "playerId": 100,
     "name": "Alexander Isak",
     "career": [
       "AIK",
@@ -1062,7 +1062,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 98,
+    "playerId": 101,
     "name": "Roberto Carlos",
     "career": [
       "União São João",
@@ -1076,7 +1076,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 99,
+    "playerId": 102,
     "name": "Declan Rice",
     "career": [
       "West Ham United",
@@ -1084,7 +1084,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 100,
+    "playerId": 103,
     "name": "Javier Pastore",
     "career": [
       "Talleres",
@@ -1097,7 +1097,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 101,
+    "playerId": 104,
     "name": "Bruno Guimarães",
     "career": [
       "Audax",
@@ -1107,7 +1107,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 102,
+    "playerId": 105,
     "name": "David de Gea",
     "career": [
       "Atlético Madrid",
@@ -1116,7 +1116,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 103,
+    "playerId": 106,
     "name": "Marcelo",
     "career": [
       "Fluminense",
@@ -1126,7 +1126,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 104,
+    "playerId": 107,
     "name": "Sadio Mané",
     "career": [
       "Metz",
@@ -1138,7 +1138,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 105,
+    "playerId": 108,
     "name": "Gareth Bale",
     "career": [
       "Southampton",
@@ -1149,7 +1149,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 106,
+    "playerId": 109,
     "name": "Leonardo Bonucci",
     "career": [
       "Inter Milan",
@@ -1164,7 +1164,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 107,
+    "playerId": 110,
     "name": "Hakan Çalhanoğlu",
     "career": [
       "Karlsruher SC",
@@ -1175,7 +1175,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 108,
+    "playerId": 111,
     "name": "Nuno Mendes",
     "career": [
       "Sporting CP",
@@ -1183,7 +1183,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 109,
+    "playerId": 112,
     "name": "Alisson Becker",
     "career": [
       "Internacional",
@@ -1192,7 +1192,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 110,
+    "playerId": 113,
     "name": "Benjamin Šeško",
     "career": [
       "RB Salzbourg",
@@ -1203,7 +1203,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 111,
+    "playerId": 114,
     "name": "David Villa",
     "career": [
       "Sporting Gijón",
@@ -1216,7 +1216,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 112,
+    "playerId": 115,
     "name": "Ibrahima Konaté",
     "career": [
       "Sochaux",
@@ -1226,7 +1226,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 113,
+    "playerId": 116,
     "name": "Ademola Lookman",
     "career": [
       "Charlton Athletic",
@@ -1239,7 +1239,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 114,
+    "playerId": 117,
     "name": "Cole Palmer",
     "career": [
       "Manchester City",
@@ -1247,7 +1247,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 115,
+    "playerId": 118,
     "name": "Thierry Henry",
     "career": [
       "Monaco",
@@ -1259,7 +1259,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 116,
+    "playerId": 119,
     "name": "Federico Dimarco",
     "career": [
       "Inter Milan",
@@ -1273,7 +1273,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 117,
+    "playerId": 120,
     "name": "Leon Bailey",
     "career": [
       "Genk",
@@ -1284,7 +1284,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 118,
+    "playerId": 121,
     "name": "Federico Valverde",
     "career": [
       "Peñarol",
@@ -1294,7 +1294,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 119,
+    "playerId": 122,
     "name": "Ederson",
     "career": [
       "Rio Ave",
@@ -1303,7 +1303,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 120,
+    "playerId": 123,
     "name": "Jude Bellingham",
     "career": [
       "Birmingham City",
@@ -1312,7 +1312,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 121,
+    "playerId": 124,
     "name": "Wilfried Zaha",
     "career": [
       "Crystal Palace",
@@ -1325,7 +1325,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 122,
+    "playerId": 125,
     "name": "Pedri",
     "career": [
       "Las Palmas",
@@ -1333,7 +1333,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 123,
+    "playerId": 126,
     "name": "Fabián Ruiz",
     "career": [
       "Real Betis",
@@ -1343,7 +1343,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 124,
+    "playerId": 127,
     "name": "Didier Drogba",
     "career": [
       "Le Mans",
@@ -1357,7 +1357,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 125,
+    "playerId": 128,
     "name": "Ronaldinho",
     "career": [
       "Grêmio",
@@ -1371,7 +1371,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 126,
+    "playerId": 129,
     "name": "Victor Osimhen",
     "career": [
       "Wolfsburg",
@@ -1382,7 +1382,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 127,
+    "playerId": 130,
     "name": "Robert Lewandowski",
     "career": [
       "Znicz Pruszków",
@@ -1394,7 +1394,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 128,
+    "playerId": 131,
     "name": "Vinícius Júnior",
     "career": [
       "Flamengo",
@@ -1402,7 +1402,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 129,
+    "playerId": 132,
     "name": "Edinson Cavani",
     "career": [
       "Danubio",
@@ -1415,7 +1415,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 130,
+    "playerId": 133,
     "name": "Kaká",
     "career": [
       "São Paulo",
@@ -1427,7 +1427,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 131,
+    "playerId": 134,
     "name": "Luis Suárez",
     "career": [
       "Nacional",
@@ -1441,7 +1441,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 132,
+    "playerId": 135,
     "name": "Sergio Agüero",
     "career": [
       "Independiente",
@@ -1451,7 +1451,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 133,
+    "playerId": 136,
     "name": "Gianluigi Buffon",
     "career": [
       "Parma",
@@ -1462,7 +1462,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 134,
+    "playerId": 137,
     "name": "Ronaldo Nazário",
     "career": [
       "Cruzeiro",
@@ -1475,7 +1475,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 135,
+    "playerId": 138,
     "name": "Pedro",
     "career": [
       "FC Barcelona",
@@ -1485,7 +1485,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 136,
+    "playerId": 139,
     "name": "Antonio Rüdiger",
     "career": [
       "VfB Stuttgart",
@@ -1495,7 +1495,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 137,
+    "playerId": 140,
     "name": "Andrew Robertson",
     "career": [
       "Queen's Park",
@@ -1506,7 +1506,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 138,
+    "playerId": 141,
     "name": "Alexis Mac Allister",
     "career": [
       "Argentinos Juniors",
@@ -1516,7 +1516,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 139,
+    "playerId": 142,
     "name": "Zinedine Zidane",
     "career": [
       "Cannes",
@@ -1526,7 +1526,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 140,
+    "playerId": 143,
     "name": "Andrea Pirlo",
     "career": [
       "Brescia",
@@ -1539,7 +1539,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 141,
+    "playerId": 144,
     "name": "Roberto Baggio",
     "career": [
       "Vicenza",
@@ -1552,7 +1552,7 @@ export const PLAYERS_DATA: QuizPlayer[] = [
     ]
   },
   {
-    "playerId": 142,
+    "playerId": 145,
     "name": "Andrés Iniesta",
     "career": [
       "FC Barcelona",
